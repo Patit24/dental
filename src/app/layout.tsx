@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Footer, Header, FloatingActions } from "@/components/site-shell";
-import { Dental3DLayer } from "@/components/dental-3d-loader";
 import { SmoothScroll } from "@/components/smooth-scroll";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
@@ -20,7 +19,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${outfit.variable} ${jakarta.variable}`}>
         <a className="skip-link" href="#main">Skip to content</a>
         <SmoothScroll>
-          <Dental3DLayer />
           <Header />
           <main id="main">{children}</main>
           <Footer />
