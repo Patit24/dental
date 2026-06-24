@@ -1,7 +1,7 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Image as DreiImage, RoundedBox } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { RoundedBox } from "@react-three/drei";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -10,296 +10,395 @@ import * as THREE from "three";
 gsap.registerPlugin(ScrollTrigger);
 
 type MotionState = {
-  progress: React.MutableRefObject<number>;
+  chapter: React.MutableRefObject<number>;
+  chapterProgress: React.MutableRefObject<number>;
   mobile: boolean;
   reduced: boolean;
 };
 
-type PhotoKind = "hero" | "tools" | "implant";
-
-const aqua = new THREE.MeshPhysicalMaterial({
-  color: "#60d5d0", roughness: 0.24, metalness: 0.06, transmission: 0.08,
-  clearcoat: 1, clearcoatRoughness: 0.16,
-});
 const pearl = new THREE.MeshPhysicalMaterial({
-  color: "#fffef9", roughness: 0.18, metalness: 0.02, transmission: 0.06,
-  clearcoat: 1, clearcoatRoughness: 0.12,
+  color: "#fffdfa",
+  roughness: 0.12,
+  metalness: 0.02,
+  transmission: 0.08,
+  clearcoat: 1,
+  clearcoatRoughness: 0.08,
+});
+const translucentPearl = new THREE.MeshPhysicalMaterial({
+  color: "#dffcf8",
+  roughness: 0.08,
+  transparent: true,
+  opacity: 0.72,
+  transmission: 0.62,
+  thickness: 0.8,
+  clearcoat: 1,
 });
 const chrome = new THREE.MeshStandardMaterial({
-  color: "#b8d5d7", roughness: 0.15, metalness: 0.88,
+  color: "#b9d5d9",
+  roughness: 0.12,
+  metalness: 0.9,
 });
-const mintGlass = new THREE.MeshPhysicalMaterial({
-  color: "#b8f1e8", roughness: 0.08, metalness: 0, transparent: true,
-  opacity: 0.45, transmission: 0.72, thickness: 0.4,
+const aqua = new THREE.MeshPhysicalMaterial({
+  color: "#49d4cf",
+  roughness: 0.2,
+  metalness: 0.08,
+  clearcoat: 1,
+});
+const blueGlass = new THREE.MeshPhysicalMaterial({
+  color: "#78dfe4",
+  roughness: 0.06,
+  transparent: true,
+  opacity: 0.34,
+  transmission: 0.78,
+  thickness: 0.5,
+});
+const glow = new THREE.MeshBasicMaterial({
+  color: "#7ff8ee",
+  transparent: true,
+  opacity: 0.8,
 });
 
-function follow(
-  group: THREE.Group,
-  target: [number, number, number],
-  rotation: [number, number, number],
-  delta: number,
-  scale = 1,
-) {
-  const speed = 1 - Math.exp(-delta * 4.5);
-  group.position.lerp(new THREE.Vector3(...target), speed);
-  group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, rotation[0], speed);
-  group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, rotation[1], speed);
-  group.rotation.z = THREE.MathUtils.lerp(group.rotation.z, rotation[2], speed);
-  const nextScale = THREE.MathUtils.lerp(group.scale.x, scale, speed);
-  group.scale.setScalar(nextScale);
+const chapterCamera = [
+  new THREE.Vector3(0.3, 0.15, 8.4),
+  new THREE.Vector3(0, 0, 5.2),
+  new THREE.Vector3(0, 0.2, 8),
+  new THREE.Vector3(0, 0, 7),
+  new THREE.Vector3(0, 0, 8.2),
+  new THREE.Vector3(0, 0.1, 8),
+  new THREE.Vector3(0, 0.3, 8.4),
+  new THREE.Vector3(0, 0, 8),
+  new THREE.Vector3(0, 0.6, 9),
+];
+
+function storyPosition(state: MotionState) {
+  return state.chapter.current + state.chapterProgress.current;
 }
 
-function PhotoCard({ state, kind, url }: { state: MotionState; kind: PhotoKind; url: string }) {
-  const ref = useRef<THREE.Group>(null);
-  const imageRef = useRef<THREE.Mesh>(null);
-  useFrame(({ pointer }, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const mouseX = state.mobile || state.reduced ? 0 : pointer.x * 0.14;
-    const mouseY = state.mobile || state.reduced ? 0 : pointer.y * 0.1;
+function weightAt(state: MotionState, index: number) {
+  const distance = Math.abs(storyPosition(state) - index);
+  return THREE.MathUtils.smoothstep(1.05 - distance, 0, 1);
+}
 
-    if (kind === "hero") {
-      const travel = THREE.MathUtils.smoothstep(p, 0, 0.14);
-      follow(ref.current, [2.25 - travel * 4.9 + mouseX, 0.1 + travel * 0.9 + mouseY, -1.25 - travel], [0.03 + mouseY, -0.13 + mouseX, -0.03 + travel * 0.18], delta, state.mobile ? 0.58 : 1);
-      ref.current.visible = p < 0.27;
-    } else if (kind === "tools") {
-      const enter = THREE.MathUtils.smoothstep(p, 0.055, 0.14);
-      const leave = THREE.MathUtils.smoothstep(p, 0.25, 0.38);
-      follow(ref.current, [5.8 - enter * 3.3 - leave * 5.4, -0.25 + enter * 0.8 + mouseY, -1.6 - leave], [0.08, -0.18 + mouseX, -0.08 + enter * 0.12], delta, state.mobile ? 0.5 : 0.84);
-      ref.current.visible = p > 0.035 && p < 0.43;
-    } else {
-      const enter = THREE.MathUtils.smoothstep(p, 0.26, 0.42);
-      const leave = THREE.MathUtils.smoothstep(p, 0.58, 0.72);
-      follow(ref.current, [-5.6 + enter * 3.4 + leave * 5.2, -0.55 + enter * 1.2 + mouseY, -1.75 - leave], [-0.06, 0.15 + mouseX, 0.07 - enter * 0.12], delta, state.mobile ? 0.5 : 0.8);
-      ref.current.visible = p > 0.22 && p < 0.76;
+function seeded(index: number, channel: number) {
+  const value = Math.sin(index * 91.173 + channel * 47.77) * 43758.5453;
+  return value - Math.floor(value);
+}
+
+function stage(group: THREE.Group | null, state: MotionState, index: number, delta: number, position: [number, number, number]) {
+  if (!group) return 0;
+  const weight = weightAt(state, index);
+  group.visible = weight > 0.015;
+  const speed = 1 - Math.exp(-delta * 5);
+  group.position.lerp(new THREE.Vector3(...position), speed);
+  const scale = THREE.MathUtils.lerp(group.scale.x, 0.72 + weight * 0.28, speed);
+  group.scale.setScalar(scale);
+  return weight;
+}
+
+function ToothModel({ split = 0, translucent = false }: { split?: number; translucent?: boolean }) {
+  const material = translucent ? translucentPearl : pearl;
+  return <group>
+    <group position={[-split, 0, 0]}>
+      <mesh material={material} scale={[0.72, 0.92, 0.88]} position={[-0.32, 0.18, 0]} castShadow>
+        <sphereGeometry args={[0.78, 36, 28]} />
+      </mesh>
+      <mesh material={material} position={[-0.52, -0.84, 0]} rotation={[0, 0, 0.1]} castShadow>
+        <coneGeometry args={[0.29, 1.55, 28]} />
+      </mesh>
+    </group>
+    <group position={[split, 0, 0]}>
+      <mesh material={material} scale={[0.72, 0.92, 0.88]} position={[0.32, 0.18, 0]} castShadow>
+        <sphereGeometry args={[0.78, 36, 28]} />
+      </mesh>
+      <mesh material={material} position={[0.52, -0.84, 0]} rotation={[0, 0, -0.1]} castShadow>
+        <coneGeometry args={[0.29, 1.55, 28]} />
+      </mesh>
+    </group>
+  </group>;
+}
+
+function Instrument({ type, scale = 1 }: { type: "mirror" | "brush" | "crown" | "aligner"; scale?: number }) {
+  if (type === "mirror") return <group scale={scale}>
+    <mesh material={chrome}><torusGeometry args={[0.48, 0.07, 16, 36]} /></mesh>
+    <mesh material={blueGlass}><circleGeometry args={[0.4, 36]} /></mesh>
+    <mesh position={[0, -1.2, 0]} material={chrome}><cylinderGeometry args={[0.05, 0.08, 1.6, 16]} /></mesh>
+  </group>;
+  if (type === "brush") return <group scale={scale}>
+    <RoundedBox args={[0.28, 2.6, 0.28]} radius={0.14} smoothness={4} material={aqua} />
+    <RoundedBox args={[0.66, 0.5, 0.32]} radius={0.12} smoothness={4} position={[0, 1.52, 0]} material={pearl} />
+    {[-0.2, -0.06, 0.08, 0.22].map((x) => <mesh key={x} position={[x, 1.84, 0]} material={blueGlass}><boxGeometry args={[0.07, 0.35, 0.14]} /></mesh>)}
+  </group>;
+  if (type === "crown") return <group scale={scale}>
+    <mesh scale={[0.9, 0.78, 0.84]} material={pearl}><sphereGeometry args={[0.68, 28, 22]} /></mesh>
+    <mesh position={[0, -0.42, 0]} material={pearl}><cylinderGeometry args={[0.5, 0.58, 0.44, 28]} /></mesh>
+  </group>;
+  return <group scale={scale} rotation={[Math.PI / 2, 0, 0]}>
+    <mesh material={blueGlass}><torusGeometry args={[0.75, 0.17, 16, 44, Math.PI]} /></mesh>
+    {[-0.52, -0.26, 0, 0.26, 0.52].map((x) => <mesh key={x} position={[x, 0.04 + Math.abs(x) * 0.2, 0]} scale={[0.24, 0.34, 0.24]} material={pearl}><sphereGeometry args={[0.5, 16, 12]} /></mesh>)}
+  </group>;
+}
+
+function ImplantModel({ scale = 1 }: { scale?: number }) {
+  return <group scale={scale}>
+    <mesh material={chrome}><cylinderGeometry args={[0.36, 0.22, 2.25, 28]} /></mesh>
+    {[-0.78, -0.5, -0.22, 0.06, 0.34, 0.62].map((y) => <mesh key={y} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]} material={chrome}><torusGeometry args={[0.34, 0.055, 10, 28]} /></mesh>)}
+    <mesh position={[0, 1.32, 0]} scale={[0.92, 0.76, 0.84]} material={pearl}><sphereGeometry args={[0.58, 28, 20]} /></mesh>
+  </group>;
+}
+
+function CameraDirector({ state }: { state: MotionState }) {
+  const { camera, pointer } = useThree();
+  const target = useRef(new THREE.Vector3());
+  useFrame((clock, delta) => {
+    const chapter = Math.min(8, state.chapter.current);
+    const next = Math.min(8, chapter + 1);
+    const t = state.reduced ? 0 : THREE.MathUtils.smootherstep(state.chapterProgress.current, 0, 1);
+    target.current.lerpVectors(chapterCamera[chapter], chapterCamera[next], t);
+    if (!state.mobile && !state.reduced) {
+      target.current.x += pointer.x * 0.24;
+      target.current.y += pointer.y * 0.14;
+      if (chapter === 0) target.current.x += Math.sin(clock.clock.elapsedTime * 0.18) * 0.28;
+    }
+    camera.position.lerp(target.current, 1 - Math.exp(-delta * 2.8));
+    camera.lookAt(0, 0, 0);
+  });
+  return null;
+}
+
+function HeroUniverse({ state }: { state: MotionState }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame((clock, delta) => {
+    const weight = stage(ref.current, state, 0, delta, [state.mobile ? 1.9 : 2.45, 0.15, -0.5]);
+    if (!ref.current) return;
+    ref.current.rotation.y += state.reduced ? 0 : delta * (0.08 + weight * 0.08);
+    ref.current.rotation.z = Math.sin(clock.clock.elapsedTime * 0.35) * 0.04;
+  });
+  return <group ref={ref}>
+    <ToothModel translucent />
+    {[0, 1, 2].map((i) => <mesh key={i} rotation={[Math.PI / 2 + i * 0.48, i * 0.7, i]} material={blueGlass}><torusGeometry args={[2.05 + i * 0.35, 0.018, 8, 80]} /></mesh>)}
+    <group position={[-2, 0.55, 0]} rotation={[0.2, 0, -0.65]}><Instrument type="brush" scale={0.38} /></group>
+    <group position={[1.8, 0.9, 0.2]} rotation={[0.1, 0.3, 0.5]}><Instrument type="mirror" scale={0.48} /></group>
+    <group position={[0.9, -1.7, 0.5]}><Instrument type="aligner" scale={0.48} /></group>
+  </group>;
+}
+
+function PortalLab({ state }: { state: MotionState }) {
+  const ref = useRef<THREE.Group>(null);
+  const tooth = useRef<THREE.Group>(null);
+  useFrame((_, delta) => {
+    const weight = stage(ref.current, state, 1, delta, [0, 0.1, -0.7]);
+    if (!ref.current) return;
+    ref.current.rotation.y += state.reduced ? 0 : delta * 0.06;
+    ref.current.rotation.z = weight * 0.04;
+    const split = THREE.MathUtils.smoothstep(state.chapterProgress.current, 0.08, 0.72) * 1.15;
+    if (tooth.current) {
+      const toothRoot = tooth.current.children[0] as THREE.Group | undefined;
+      const left = toothRoot?.children[0] as THREE.Group | undefined;
+      const right = toothRoot?.children[1] as THREE.Group | undefined;
+      if (left && right) {
+        left.position.x = -split;
+        right.position.x = split;
+      }
     }
   });
-
   return <group ref={ref}>
-    <RoundedBox args={[5.02, 3.35, 0.13]} radius={0.24} smoothness={5} position={[0, -0.04, -0.1]}>
-      <meshPhysicalMaterial color="#effaf8" roughness={0.22} metalness={0.02} clearcoat={1} />
-    </RoundedBox>
-    <DreiImage
-      ref={imageRef}
-      url={url}
-      scale={[4.85, 3.18]}
-      radius={0.22}
-      transparent
-      toneMapped
-    />
+    <group ref={tooth} scale={1.65}><ToothModel translucent /></group>
+    {[0, 1, 2, 3].map((i) => <mesh key={i} position={[0, 0, -1 - i * 1.1]} rotation={[Math.PI / 2, 0, i * 0.35]} material={i % 2 ? glow : blueGlass}><torusGeometry args={[1.5 + i * 0.18, 0.025, 10, 70]} /></mesh>)}
+    <group position={[-2.8, 1.3, -1]} rotation={[0.5, 0.2, -0.6]}><Instrument type="aligner" scale={0.55} /></group>
+    <group position={[2.7, -1.1, -1.4]} rotation={[0.1, 0.4, 0.3]}><Instrument type="crown" scale={0.58} /></group>
+    <group position={[2.6, 1.4, -2]} rotation={[0.4, 0, -0.3]}><ImplantModel scale={0.35} /></group>
   </group>;
 }
 
-function Tooth({ state }: { state: MotionState }) {
+function ServiceAssembly({ state }: { state: MotionState }) {
   const ref = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const x = THREE.MathUtils.lerp(2.5, -3.15, Math.min(p / 0.24, 1));
-    const y = 1.05 - Math.sin(p * Math.PI * 2.4) * 0.7;
-    const z = -1.1 + Math.sin(p * Math.PI) * 0.55;
-    follow(ref.current, [x, y, z], [0.1 + p * 1.2, -0.45 + p * 2.8, -0.08], delta, state.mobile ? 0.62 : 1.04);
+  const cards = [
+    { p: [-2.6, 1.3, 0] as [number, number, number], type: "mirror" as const },
+    { p: [0, -1.4, 0] as [number, number, number], type: "brush" as const },
+    { p: [2.6, 1.2, 0] as [number, number, number], type: "aligner" as const },
+  ];
+  useFrame((clock, delta) => {
+    stage(ref.current, state, 2, delta, [state.mobile ? 2.3 : 0.5, 0, -1.8]);
+    if (ref.current) ref.current.rotation.y = Math.sin(clock.clock.elapsedTime * 0.22) * 0.08;
   });
   return <group ref={ref}>
-    <mesh material={pearl} scale={[1.05, 0.92, 0.88]} castShadow>
-      <sphereGeometry args={[0.76, 32, 24]} />
-    </mesh>
-    <mesh position={[-0.28, -0.8, 0]} rotation={[0, 0, 0.13]} material={pearl} castShadow>
-      <coneGeometry args={[0.28, 1.35, 24]} />
-    </mesh>
-    <mesh position={[0.28, -0.8, 0]} rotation={[0, 0, -0.13]} material={pearl} castShadow>
-      <coneGeometry args={[0.28, 1.35, 24]} />
-    </mesh>
-    <mesh position={[0, 0.36, 0.61]} material={mintGlass}>
-      <torusGeometry args={[0.34, 0.045, 12, 32, Math.PI]} />
-    </mesh>
+    {cards.map((card, i) => <group key={card.type} position={card.p}>
+      <RoundedBox args={[2.05, 2.45, 0.18]} radius={0.2} smoothness={5} material={blueGlass} />
+      <group position={[0, 0, 0.55]} rotation={[0.2, i * 0.4, i === 1 ? -0.25 : 0]}><Instrument type={card.type} scale={0.52} /></group>
+      <mesh position={[0, -0.88, 0.25]} material={glow}><boxGeometry args={[0.9, 0.025, 0.02]} /></mesh>
+    </group>)}
+    <mesh rotation={[Math.PI / 2, 0, 0]} material={blueGlass}><torusGeometry args={[4.25, 0.02, 8, 96]} /></mesh>
   </group>;
 }
 
-function Toothbrush({ state }: { state: MotionState }) {
+function ImplantShowcase({ state }: { state: MotionState }) {
   const ref = useRef<THREE.Group>(null);
+  const implant = useRef<THREE.Group>(null);
   useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    follow(
-      ref.current,
-      [-4.7 + p * 9.2, 2.7 - p * 5.3, -1.9],
-      [0.2, p * 4.4, -0.72 + p * 1.6],
-      delta,
-      state.mobile ? 0.5 : 0.75,
-    );
+    stage(ref.current, state, 3, delta, [state.mobile ? 2.2 : 2.7, -0.1, -0.6]);
+    if (implant.current) implant.current.rotation.y += state.reduced ? 0 : delta * 0.45;
   });
   return <group ref={ref}>
-    <RoundedBox args={[0.38, 3.4, 0.34]} radius={0.18} smoothness={4} material={aqua} />
-    <RoundedBox args={[0.78, 0.62, 0.38]} radius={0.14} smoothness={4} position={[0, 1.9, 0]} material={pearl} />
-    {[-0.24, -0.08, 0.08, 0.24].map((x) =>
-      <mesh key={x} position={[x, 2.28, 0]} material={mintGlass}>
-        <boxGeometry args={[0.09, 0.42, 0.18]} />
-      </mesh>
-    )}
+    <group ref={implant} rotation={[0.08, 0, -0.18]}><ImplantModel scale={1.32} /></group>
+    {[0.9, 1.35, 1.8].map((r, i) => <mesh key={r} rotation={[Math.PI / 2, i * 0.32, 0]} material={i === 1 ? glow : blueGlass}><torusGeometry args={[r, 0.022, 10, 72]} /></mesh>)}
+    {[-1.7, -1.25, 1.25, 1.7].map((x, i) => <mesh key={x} position={[x, (i % 2 ? 1 : -1) * 1.3, 0]} material={glow}><sphereGeometry args={[0.07, 12, 8]} /></mesh>)}
   </group>;
 }
 
-function Mirror({ state }: { state: MotionState }) {
+function ParticleSmile({ state, finale = false }: { state: MotionState; finale?: boolean }) {
+  const ref = useRef<THREE.Points>(null);
+  const count = state.mobile ? 170 : 420;
+  const { start, target } = useMemo(() => {
+    const from = new Float32Array(count * 3);
+    const to = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI;
+      const row = i % 6;
+      from[i * 3] = (seeded(i, 0) - 0.5) * 7;
+      from[i * 3 + 1] = (seeded(i, 1) - 0.5) * 4.5;
+      from[i * 3 + 2] = (seeded(i, 2) - 0.5) * 2;
+      to[i * 3] = Math.cos(a) * (3.1 - row * 0.12);
+      to[i * 3 + 1] = -Math.sin(a) * 1.55 + row * 0.1;
+      to[i * 3 + 2] = Math.sin(i * 1.7) * 0.12;
+    }
+    return { start: from, target: to };
+  }, [count]);
+  useFrame((clock) => {
+    if (!ref.current) return;
+    const index = finale ? 8 : 4;
+    const weight = weightAt(state, index);
+    ref.current.visible = weight > 0.02;
+    const morph = state.reduced ? 1 : THREE.MathUtils.smootherstep(state.chapterProgress.current, 0.05, 0.82);
+    const positions = ref.current.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < positions.length; i++) positions[i] = THREE.MathUtils.lerp(start[i], target[i], morph);
+    ref.current.geometry.attributes.position.needsUpdate = true;
+    ref.current.rotation.y = finale ? -0.18 : Math.sin(clock.clock.elapsedTime * 0.25) * 0.08;
+    ref.current.position.set(state.mobile ? 1.7 : 2.25, finale ? 1.1 : 0.2, -1.2);
+    ref.current.scale.setScalar(0.78 + weight * 0.22);
+  });
+  return <points ref={ref}>
+    <bufferGeometry><bufferAttribute attach="attributes-position" args={[start.slice(), 3]} /></bufferGeometry>
+    <pointsMaterial color={finale ? "#c5fff8" : "#7ff4e8"} size={state.mobile ? 0.045 : 0.062} transparent opacity={0.9} sizeAttenuation />
+  </points>;
+}
+
+function SmileTransformation({ state }: { state: MotionState }) {
   const ref = useRef<THREE.Group>(null);
-  useFrame(({ pointer }, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const mx = state.mobile || state.reduced ? 0 : pointer.x * 0.32;
-    const my = state.mobile || state.reduced ? 0 : pointer.y * 0.24;
-    follow(ref.current, [3.8 + mx - p * 1.8, -1.9 + my + p * 2.7, -2.4], [0.4, -0.3 + mx, 0.7 + p], delta, 0.72);
+  const teeth = useRef<THREE.Group>(null);
+  useFrame((_, delta) => {
+    stage(ref.current, state, 5, delta, [state.mobile ? 2.25 : 2.7, 0, -1.2]);
+    const progress = THREE.MathUtils.smootherstep(state.chapterProgress.current, 0.06, 0.88);
+    teeth.current?.children.forEach((tooth, i) => {
+      const x = (i - 3.5) * 0.38;
+      const beforeY = -0.5 + Math.sin(i * 2.1) * 0.2;
+      const afterY = -0.52 + Math.abs(x) * 0.08;
+      tooth.position.y = THREE.MathUtils.lerp(beforeY, afterY, progress);
+      tooth.rotation.z = THREE.MathUtils.lerp((i % 2 ? 1 : -1) * 0.17, 0, progress);
+    });
   });
   return <group ref={ref}>
-    <mesh material={chrome}><torusGeometry args={[0.7, 0.09, 18, 40]} /></mesh>
-    <mesh material={mintGlass}><circleGeometry args={[0.61, 40]} /></mesh>
-    <mesh position={[0, -1.75, 0]} material={chrome}><cylinderGeometry args={[0.07, 0.1, 2.2, 18]} /></mesh>
+    <mesh position={[-1.35, 0, 0]} material={blueGlass}><sphereGeometry args={[1.45, 32, 24, 0, Math.PI]} /></mesh>
+    <mesh position={[1.35, 0, 0]} rotation={[0, Math.PI, 0]} material={translucentPearl}><sphereGeometry args={[1.45, 32, 24, 0, Math.PI]} /></mesh>
+    <mesh material={blueGlass}><planeGeometry args={[0.035, 3.5]} /></mesh>
+    <group ref={teeth}>{Array.from({ length: 8 }).map((_, i) => {
+      const x = (i - 3.5) * 0.38;
+      const beforeY = -0.5 + Math.sin(i * 2.1) * 0.2;
+      return <mesh key={i} position={[x, beforeY, 1.3]} rotation={[0, 0, (i % 2 ? 1 : -1) * 0.17]} scale={[0.32, 0.44, 0.22]} material={pearl}><sphereGeometry args={[0.5, 18, 14]} /></mesh>;
+    })}</group>
   </group>;
 }
 
-function Drill({ state }: { state: MotionState }) {
+function DoctorClinic({ state }: { state: MotionState }) {
   const ref = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const orbit = p * Math.PI * 5;
-    follow(ref.current, [Math.cos(orbit) * 2.6, -1.1 + Math.sin(orbit) * 1.4, -3], [1.2, orbit, 0.4], delta, 0.58);
+  useFrame((clock, delta) => {
+    stage(ref.current, state, 6, delta, [state.mobile ? 2.2 : 2.8, -0.1, -1.7]);
+    if (ref.current) ref.current.rotation.y = Math.sin(clock.clock.elapsedTime * 0.18) * 0.04;
   });
   return <group ref={ref}>
-    <mesh rotation={[0, 0, Math.PI / 2]} material={chrome}><cylinderGeometry args={[0.25, 0.34, 1.8, 24]} /></mesh>
-    <mesh position={[1.05, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={chrome}><coneGeometry args={[0.11, 0.7, 20]} /></mesh>
-    <mesh position={[-0.35, -0.75, 0]} rotation={[0, 0, -0.18]} material={aqua}><cylinderGeometry args={[0.2, 0.27, 1.25, 24]} /></mesh>
+    <RoundedBox args={[4.8, 3.7, 0.18]} radius={0.26} smoothness={5} position={[0, 0, -0.7]} material={blueGlass} />
+    <RoundedBox args={[1.45, 2.6, 0.3]} radius={0.3} smoothness={5} position={[0, -0.15, 0]} material={translucentPearl} />
+    <mesh position={[0, 0.55, 0.28]} material={pearl}><sphereGeometry args={[0.46, 24, 18]} /></mesh>
+    <RoundedBox args={[0.84, 1.25, 0.3]} radius={0.26} smoothness={5} position={[0, -0.55, 0.25]} material={aqua} />
+    {[[-1.65, 0.95], [1.65, 0.95], [-1.65, -0.95], [1.65, -0.95]].map(([x, y], i) => <group key={i} position={[x, y, 0.2]}>
+      <RoundedBox args={[1.05, 0.66, 0.08]} radius={0.12} smoothness={4} material={blueGlass} />
+      <mesh position={[0, 0, 0.07]} material={glow}><boxGeometry args={[0.55, 0.02, 0.01]} /></mesh>
+    </group>)}
   </group>;
 }
 
-function Aligner({ state }: { state: MotionState }) {
+function AppointmentPod({ state }: { state: MotionState }) {
   const ref = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const reveal = THREE.MathUtils.smoothstep(p, 0.18, 0.48);
-    follow(ref.current, [4.4 - reveal * 2.3, -0.2 + reveal * 1.2, -2.2], [1.0, p * 2.4, -0.25], delta, 0.78);
+  useFrame((clock, delta) => {
+    stage(ref.current, state, 7, delta, [state.mobile ? 2.2 : 2.75, -0.2, -1.5]);
+    if (ref.current) ref.current.rotation.y = Math.sin(clock.clock.elapsedTime * 0.24) * 0.06;
   });
   return <group ref={ref}>
-    <mesh material={mintGlass} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.88, 0.2, 16, 48, Math.PI]} /></mesh>
-    {[-0.62, -0.31, 0, 0.31, 0.62].map((x) =>
-      <mesh key={x} position={[x, 0.08 + Math.abs(x) * 0.22, 0]} scale={[0.28, 0.4, 0.28]} material={pearl}>
-        <sphereGeometry args={[0.5, 16, 12]} />
-      </mesh>
-    )}
+    <mesh position={[0, -1.6, 0]} material={blueGlass}><cylinderGeometry args={[2.1, 2.5, 0.28, 48]} /></mesh>
+    <RoundedBox args={[3.45, 3.15, 0.35]} radius={0.38} smoothness={6} material={translucentPearl} />
+    <RoundedBox args={[2.65, 2.2, 0.16]} radius={0.25} smoothness={5} position={[0, 0, 0.28]} material={blueGlass} />
+    {[-0.85, 0, 0.85].map((x, i) => <group key={x} position={[x, 0.65 - i * 0.12, 0.5]}>
+      <RoundedBox args={[0.62, 0.62, 0.08]} radius={0.12} smoothness={3} material={i === 1 ? aqua : pearl} />
+      <mesh position={[0, 0, 0.06]} material={glow}><circleGeometry args={[0.08, 18]} /></mesh>
+    </group>)}
+    {[0, 1, 2].map((i) => <mesh key={i} rotation={[Math.PI / 2, i * 0.75, 0]} material={blueGlass}><torusGeometry args={[2.45 + i * 0.25, 0.018, 8, 72]} /></mesh>)}
   </group>;
 }
 
-function Implant({ state }: { state: MotionState }) {
+function Finale({ state }: { state: MotionState }) {
   const ref = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const t = THREE.MathUtils.smoothstep(p, 0.34, 0.66);
-    follow(ref.current, [-4.4 + t * 2.4, 1.8 - t * 1.25, -2.4], [0.2, p * 9, -0.32], delta, 0.72);
-  });
+  useFrame((_, delta) => { stage(ref.current, state, 8, delta, [0, -1.8, -2.5]); });
   return <group ref={ref}>
-    <mesh material={chrome}><cylinderGeometry args={[0.32, 0.2, 1.65, 24]} /></mesh>
-    {[-0.55, -0.28, 0, 0.28, 0.55].map((y) =>
-      <mesh key={y} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]} material={chrome}>
-        <torusGeometry args={[0.29, 0.055, 10, 24]} />
-      </mesh>
-    )}
-    <mesh position={[0, 1.02, 0]} material={pearl} scale={[1, 0.8, 0.9]}><sphereGeometry args={[0.48, 22, 16]} /></mesh>
+    {Array.from({ length: state.mobile ? 8 : 17 }).map((_, i) => {
+      const x = (i - 8) * 0.62;
+      const h = 0.5 + ((i * 7) % 9) * 0.19;
+      return <RoundedBox key={i} args={[0.48, h, 0.45]} radius={0.06} smoothness={2} position={[x, h / 2, -0.4 - (i % 3) * 0.25]} material={i % 4 === 0 ? aqua : blueGlass} />;
+    })}
+    <mesh position={[0, 0, -1]} rotation={[Math.PI / 2, 0, 0]} material={blueGlass}><circleGeometry args={[5.8, 64]} /></mesh>
   </group>;
 }
 
-function Crown({ state }: { state: MotionState }) {
-  const ref = useRef<THREE.Group>(null);
+function MedicalParticles({ state }: { state: MotionState }) {
+  const ref = useRef<THREE.Points>(null);
+  const positions = useMemo(() => {
+    const count = state.mobile ? 70 : 180;
+    const values = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      values[i * 3] = (seeded(i, 3) - 0.5) * 12;
+      values[i * 3 + 1] = (seeded(i, 4) - 0.5) * 7;
+      values[i * 3 + 2] = (seeded(i, 5) - 0.5) * 6 - 1;
+    }
+    return values;
+  }, [state.mobile]);
   useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const drop = THREE.MathUtils.smoothstep(p, 0.48, 0.76);
-    follow(ref.current, [3.6 - drop * 1.1, 4.5 - drop * 4.2, -2], [0.1, p * 3, 0], delta, 0.7);
+    if (!ref.current || state.reduced) return;
+    ref.current.rotation.y += delta * 0.012;
+    ref.current.position.y += delta * 0.015;
+    if (ref.current.position.y > 0.35) ref.current.position.y = -0.35;
   });
-  return <group ref={ref}>
-    <mesh scale={[0.92, 0.78, 0.82]} material={pearl}><sphereGeometry args={[0.72, 28, 20]} /></mesh>
-    <mesh position={[0, -0.44, 0]} material={pearl}><cylinderGeometry args={[0.54, 0.62, 0.48, 28]} /></mesh>
-    <mesh position={[0, 0.36, 0.58]} material={aqua}><torusGeometry args={[0.25, 0.035, 10, 28, Math.PI]} /></mesh>
-  </group>;
+  return <points ref={ref}>
+    <bufferGeometry><bufferAttribute attach="attributes-position" args={[positions, 3]} /></bufferGeometry>
+    <pointsMaterial color="#8ae9e0" size={0.025} transparent opacity={0.45} sizeAttenuation />
+  </points>;
 }
 
-function FlossAndSmile({ state }: { state: MotionState }) {
-  const ref = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    follow(ref.current, [-3.8 + p * 7.4, -2.8 + Math.sin(p * 7) * 0.5, -3.4], [0.4, p * 2, -0.2], delta, 0.64);
-  });
-  return <group ref={ref}>
-    <RoundedBox args={[1.15, 0.92, 0.38]} radius={0.22} smoothness={4} material={aqua} />
-    <mesh position={[0, 0, 0.23]} material={mintGlass}><torusGeometry args={[0.28, 0.055, 12, 32]} /></mesh>
-    <mesh position={[1.15, 0.35, 0]} rotation={[0, 0, -0.35]} material={pearl}><torusGeometry args={[0.7, 0.06, 12, 36, Math.PI]} /></mesh>
-  </group>;
-}
-
-function Toothpaste({ state }: { state: MotionState }) {
-  const ref = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    follow(ref.current, [4.6 - p * 8.3, 2.6 - Math.sin(p * Math.PI * 2) * 2.2, -3.1], [0.15, p * 4, 0.7 - p], delta, 0.58);
-  });
-  return <group ref={ref}>
-    <RoundedBox args={[1.05, 2.25, 0.48]} radius={0.22} smoothness={4} material={pearl} />
-    <RoundedBox args={[0.68, 0.38, 0.52]} radius={0.1} smoothness={3} position={[0, -1.28, 0]} material={aqua} />
-    <mesh position={[0, 0.25, 0.27]} material={aqua}><circleGeometry args={[0.27, 28]} /></mesh>
-  </group>;
-}
-
-function Braces({ state }: { state: MotionState }) {
-  const ref = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    const p = state.progress.current;
-    const t = THREE.MathUtils.smoothstep(p, 0.2, 0.52);
-    follow(ref.current, [-4 + t * 6.7, -2.2 + t * 3.2, -2.8], [0.8, -0.2 + p * 2, 0.1], delta, 0.62);
-  });
-  return <group ref={ref}>
-    <mesh material={chrome} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[1, 0.045, 10, 48, Math.PI]} /></mesh>
-    {[-0.72, -0.36, 0, 0.36, 0.72].map((x) =>
-      <group key={x} position={[x, 0.05 + Math.abs(x) * 0.28, 0]}>
-        <mesh material={pearl} scale={[0.45, 0.58, 0.35]}><sphereGeometry args={[0.5, 16, 12]} /></mesh>
-        <RoundedBox args={[0.2, 0.18, 0.16]} radius={0.035} smoothness={2} position={[0, 0, 0.2]} material={chrome} />
-      </group>
-    )}
-  </group>;
-}
-
-function Sparkles({ state }: { state: MotionState }) {
-  const group = useRef<THREE.Group>(null);
-  const positions = useMemo(() => Array.from({ length: state.mobile ? 8 : 18 }, (_, i) => {
-    const a = i * 2.399;
-    return [Math.cos(a) * (2.2 + (i % 3) * 0.5), Math.sin(a) * (1.5 + (i % 4) * 0.35), -3.8] as [number, number, number];
-  }), [state.mobile]);
-  useFrame((_, delta) => {
-    if (!group.current) return;
-    const p = state.progress.current;
-    group.current.visible = p > 0.46 && p < 0.84;
-    group.current.rotation.z += state.reduced ? 0 : delta * 0.06;
-  });
-  return <group ref={group}>{positions.map((position, i) =>
-    <mesh key={i} position={position} scale={0.05 + (i % 3) * 0.025} material={i % 2 ? pearl : aqua}>
-      <octahedronGeometry args={[1, 0]} />
-    </mesh>
-  )}</group>;
-}
-
-function Scene({ state, urls }: { state: MotionState; urls: Record<PhotoKind, string> }) {
+function JourneyWorld({ state }: { state: MotionState }) {
   return <>
-    <ambientLight intensity={1.45} />
-    <directionalLight position={[4, 7, 5]} intensity={2.2} color="#ffffff" castShadow />
-    <pointLight position={[-5, -2, 4]} intensity={18} color="#68e2da" distance={12} />
-    <pointLight position={[5, 1, 2]} intensity={12} color="#b9e9ff" distance={10} />
-    <PhotoCard state={state} kind="hero" url={urls.hero} />
-    <PhotoCard state={state} kind="tools" url={urls.tools} />
-    <PhotoCard state={state} kind="implant" url={urls.implant} />
-    <Tooth state={state} />
-    {!state.mobile && <><Toothbrush state={state} /><Mirror state={state} /><Drill state={state} /><Aligner state={state} /><Implant state={state} /><Crown state={state} /><FlossAndSmile state={state} /><Toothpaste state={state} /><Braces state={state} /><Sparkles state={state} /></>}
+    <ambientLight intensity={1.25} />
+    <directionalLight position={[4, 7, 5]} intensity={2.4} color="#ffffff" castShadow />
+    <pointLight position={[-5, -1, 4]} intensity={20} color="#5fe7df" distance={14} />
+    <pointLight position={[5, 2, 2]} intensity={16} color="#acdfff" distance={13} />
+    <CameraDirector state={state} />
+    <MedicalParticles state={state} />
+    <HeroUniverse state={state} />
+    <PortalLab state={state} />
+    <ServiceAssembly state={state} />
+    <ImplantShowcase state={state} />
+    <ParticleSmile state={state} />
+    <SmileTransformation state={state} />
+    <DoctorClinic state={state} />
+    <AppointmentPod state={state} />
+    <Finale state={state} />
+    <ParticleSmile state={state} finale />
   </>;
 }
 
@@ -313,7 +412,8 @@ function supportsWebGL() {
 }
 
 export default function Dental3DScene() {
-  const progress = useRef(0);
+  const chapter = useRef(0);
+  const chapterProgress = useRef(0);
   const [ready] = useState(() => typeof window !== "undefined" && supportsWebGL());
   const [mobile, setMobile] = useState(false);
   const [reduced, setReduced] = useState(false);
@@ -325,42 +425,43 @@ export default function Dental3DScene() {
       setMobile(mobileQuery.matches);
       setReduced(motionQuery.matches);
     };
-    const initialUpdate = window.requestAnimationFrame(update);
+    update();
     mobileQuery.addEventListener("change", update);
     motionQuery.addEventListener("change", update);
-    const trigger = ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      onUpdate: (self) => { progress.current = self.progress; },
+
+    const triggers = Array.from(document.querySelectorAll<HTMLElement>("[data-journey]")).map((element) => {
+      const index = Number(element.dataset.journey || 0);
+      return ScrollTrigger.create({
+        trigger: element,
+        start: "top 62%",
+        end: "bottom 38%",
+        onEnter: () => { chapter.current = index; chapterProgress.current = 0; },
+        onEnterBack: () => { chapter.current = index; chapterProgress.current = 1; },
+        onUpdate: (self) => {
+          chapter.current = index;
+          chapterProgress.current = self.progress;
+        },
+      });
     });
     return () => {
-      trigger.kill();
-      window.cancelAnimationFrame(initialUpdate);
+      triggers.forEach((trigger) => trigger.kill());
       mobileQuery.removeEventListener("change", update);
       motionQuery.removeEventListener("change", update);
     };
   }, []);
 
-  if (!ready) {
-    return <div className="dental-3d-fallback photo-fallback" aria-hidden="true"><span /><span /><span /></div>;
-  }
+  if (!ready) return <div className="dental-3d-fallback photo-fallback" aria-hidden="true"><span /><span /><span /></div>;
 
-  const state = { progress, mobile, reduced };
-  const basePath = window.location.pathname.startsWith("/dental") ? "/dental" : "";
-  const urls = {
-    hero: `${basePath}/images/dentazone-hero-photo.png`,
-    tools: `${basePath}/images/dentazone-tools-photo.png`,
-    implant: `${basePath}/images/dentazone-implant-photo.png`,
-  };
+  const state = { chapter, chapterProgress, mobile, reduced };
   return <div className="dental-3d-layer" aria-hidden="true">
     <Canvas
-      camera={{ position: [0, 0, 8], fov: 42 }}
-      dpr={mobile ? 1 : [1, 1.5]}
+      camera={{ position: [0, 0, 8.4], fov: 40 }}
+      dpr={mobile ? 1 : [1, 1.45]}
       gl={{ antialias: !mobile, alpha: true, powerPreference: "high-performance" }}
       shadows={!mobile}
       frameloop={reduced ? "demand" : "always"}
     >
-      <Scene state={state} urls={urls} />
+      <JourneyWorld state={state} />
     </Canvas>
   </div>;
 }

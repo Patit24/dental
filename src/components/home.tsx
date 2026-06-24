@@ -15,11 +15,11 @@ export function Hero() {
   const visualY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 42]);
   const visualScale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : .97]);
   const enter = (delay: number) => ({ initial: reduce ? false : { opacity: 0, y: 24, filter: "blur(6px)" }, animate: { opacity: 1, y: 0, filter: "blur(0px)" }, transition: { type: "spring" as const, duration: .65, bounce: 0, delay } });
-  return <section ref={heroRef} className="hero-3d relative min-h-[800px] overflow-hidden py-16 lg:min-h-[870px] lg:py-24">
+  return <section ref={heroRef} data-journey="0" className="hero-3d relative min-h-[800px] overflow-hidden py-16 lg:min-h-[870px] lg:py-24">
     <div className="pointer-events-none absolute -left-32 top-44 h-80 w-80 rounded-full border border-[var(--teal)]/10" />
     <div className="container grid items-center gap-14 lg:grid-cols-[1.1fr_.9fr]">
       <div className="relative z-10">
-        <motion.div {...enter(.05)} className="eyebrow mb-7">Trusted modern dentistry</motion.div>
+        <motion.div {...enter(.05)} className="eyebrow mb-7">Chapter 01 · The perfect smile universe</motion.div>
         <motion.h1 {...enter(.12)} className="display max-w-[800px]">Advanced Dental Care with <span className="text-[var(--teal)]">3D Motion Experience</span></motion.h1>
         <motion.p {...enter(.2)} className="lead mt-7 max-w-[620px]">Modern, painless, and trusted dental treatments designed for your perfect smile.</motion.p>
         <motion.div {...enter(.28)} className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -57,9 +57,9 @@ export function RealDentalMotionShowcase() {
   const rightY = useTransform(scrollYProgress, [0, .5, 1], reduce ? [0,0,0] : [150, 10, -100]);
   const leftRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0,0] : [-5, 4]);
   const rightRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0,0] : [6, -4]);
-  return <section ref={ref} className="section overflow-hidden bg-[linear-gradient(180deg,#f9fcfb,#eaf8f6)]">
+  return <section ref={ref} data-journey="3" className="section journey-implant overflow-hidden bg-[linear-gradient(180deg,rgba(249,252,251,.90),rgba(234,248,246,.84))]">
     <div className="container">
-      <Reveal className="mx-auto max-w-3xl text-center"><span className="eyebrow">Real dental technology</span><h2 className="section-title mt-5">Real tools. Modern treatment. Designed in motion.</h2><p className="lead mt-6">Explore the materials and technology behind restorative, surgical and everyday dental care.</p></Reveal>
+      <Reveal className="mx-auto max-w-3xl text-center"><span className="eyebrow">Chapter 04 · Implant intelligence</span><h2 className="section-title mt-5">Real tools. Modern treatment. Designed in motion.</h2><p className="lead mt-6">Explore the materials and technology behind restorative, surgical and everyday dental care.</p></Reveal>
       <div className="mt-14 grid gap-6 md:grid-cols-2 [perspective:1400px]">
         <motion.figure style={{ y:leftY, rotateZ:leftRotate, rotateY:-3 }} whileHover={reduce?undefined:{scale:1.02,rotateY:1}} transition={{type:"spring",duration:.35,bounce:0}} className="photo-motion-card">
           <div className="relative aspect-[3/2] overflow-hidden rounded-[30px]"><Image src="/images/dentazone-tools-photo.png" alt="Real toothbrush, dental tools, floss, toothpaste and aligner in a premium clinical composition" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover"/></div>
@@ -97,8 +97,9 @@ function StatFloat({ className, icon, value, label, delay }: { className: string
 }
 
 export function TrustStrip() {
-  return <section className="border-y border-black/5 bg-white py-7"><div className="container grid gap-5 text-center sm:grid-cols-2 lg:grid-cols-4">
-    {[["Same-day","appointments"],["Digital","diagnostics"],["Transparent","treatment plans"],["Flexible","payment options"]].map(([a,b])=><div key={a} className="flex items-center justify-center gap-3 text-sm"><Check className="rounded-full bg-[var(--cyan)] p-1 text-[var(--teal)]" size={24}/><span><b>{a}</b> {b}</span></div>)}
+  return <section data-journey="1" className="journey-portal border-y border-black/5 bg-white/88 py-16 backdrop-blur-xl"><div className="container">
+    <div className="mb-12 max-w-xl"><span className="eyebrow">Chapter 02 · Inside the tooth</span><h2 className="mt-4 text-3xl font-semibold md:text-5xl">Enter a more precise world of dentistry.</h2></div>
+    <div className="grid gap-5 text-center sm:grid-cols-2 lg:grid-cols-4">{[["Same-day","appointments"],["Digital","diagnostics"],["Transparent","treatment plans"],["Flexible","payment options"]].map(([a,b])=><div key={a} className="flex items-center justify-center gap-3 text-sm"><Check className="rounded-full bg-[var(--cyan)] p-1 text-[var(--teal)]" size={24}/><span><b>{a}</b> {b}</span></div>)}</div>
   </div></section>;
 }
 
@@ -118,8 +119,8 @@ export function ServicesSection({ all = false }: { all?: boolean }) {
     { title:"Emergency Dental Care", desc:"Direct guidance when a dental concern cannot wait.", icon:Activity },
   ];
   const list = all ? services : featured;
-  return <section className="section section-translucent" id="services"><div className="container">
-    <Reveal className="mx-auto max-w-3xl text-center"><span className="eyebrow">Complete dental care</span><h2 className="section-title mt-5">Everything your smile needs, under one roof.</h2><p className="lead mx-auto mt-6 max-w-2xl">From routine prevention to full smile transformation, every treatment is planned with clarity and delivered with care.</p></Reveal>
+  return <section data-journey="2" className="section section-translucent journey-services" id="services"><div className="container">
+    <Reveal className="mx-auto max-w-3xl text-center"><span className="eyebrow">Chapter 03 · Services assembled</span><h2 className="section-title mt-5">Everything your smile needs, under one roof.</h2><p className="lead mx-auto mt-6 max-w-2xl">From routine prevention to full smile transformation, every treatment is planned with clarity and delivered with care.</p></Reveal>
     <div className="mt-14 grid gap-5 [perspective:1200px] md:grid-cols-2 lg:grid-cols-3">{list.map((s,i)=><Reveal key={s.title} delay={(i%3)*.05}><motion.article whileHover={{ y: -8, rotateX: -2.5, rotateY: i%2===0?2.5:-2.5, scale:1.012 }} transition={{ type:"spring",duration:.32,bounce:0 }} style={{transformStyle:"preserve-3d"}} className="card soft-3d-card group h-full p-7">
       <div className="mb-8 flex items-start justify-between"><span className="grid h-13 w-13 place-items-center rounded-2xl bg-[var(--cyan)] text-[var(--teal)]"><s.icon size={24}/></span><ArrowRight className="text-[var(--ink)]/25 transition-transform group-hover:translate-x-1 group-hover:text-[var(--teal)]" size={20}/></div>
       <h3 className="text-xl font-semibold">{s.title}</h3><p className="mt-3 text-sm leading-7 text-[var(--ink-soft)]">{s.desc}</p>
@@ -149,9 +150,9 @@ export function WhyChooseUs() {
     { icon: Heart, title: "Feel cared for", text: "Gentle techniques, thoughtful pacing and real conversation make every step feel easier." },
     { icon: ShieldCheck, title: "Protect the result", text: "Long-term reviews and preventive support help your new smile stay healthy and beautiful." },
   ];
-  return <section ref={ref} className="section overflow-hidden bg-[var(--ink)] text-white">
+  return <section ref={ref} data-journey="4" className="section journey-smile overflow-hidden bg-[rgba(16,58,67,.94)] text-white">
     <div className="container grid gap-14 lg:grid-cols-[.78fr_1.22fr]">
-      <Reveal><span className="eyebrow !text-[#8de3dc]">Why choose Dentazone</span><h2 className="section-title mt-5">Advanced care should feel reassuring, not overwhelming.</h2><p className="mt-6 max-w-xl leading-8 text-white/62">Every detail—from diagnosis to follow-up—is designed to create clarity, comfort and confidence.</p></Reveal>
+      <Reveal><span className="eyebrow !text-[#8de3dc]">Chapter 05 · Smile made of light</span><h2 className="section-title mt-5">Advanced care should feel reassuring, not overwhelming.</h2><p className="mt-6 max-w-xl leading-8 text-white/62">Every detail—from diagnosis to follow-up—is designed to create clarity, comfort and confidence.</p></Reveal>
       <div className="relative">
         <div className="absolute bottom-7 left-[23px] top-7 w-px bg-white/12"/>
         <motion.div style={{ scaleY: reduce ? 1 : lineScale, transformOrigin:"top" }} className="absolute bottom-7 left-[23px] top-7 w-px bg-gradient-to-b from-[#8de3dc] to-[#4daeb9]"/>
@@ -190,15 +191,15 @@ export function Metrics() {
 }
 
 export function DoctorsSection({ all = false }: { all?: boolean }) {
-  return <section className="section"><div className="container"><Reveal className="flex flex-col justify-between gap-7 md:flex-row md:items-end"><div><span className="eyebrow">Meet your care team</span><h2 className="section-title mt-5 max-w-2xl">Experts who listen before they treat.</h2></div>{!all&&<Link className="btn btn-secondary" href="/doctors">Meet all doctors <ArrowRight size={17}/></Link>}</Reveal>
+  return <section data-journey={all ? undefined : "6"} className="section journey-doctor"><div className="container"><Reveal className="flex flex-col justify-between gap-7 md:flex-row md:items-end"><div><span className="eyebrow">{all ? "Meet your care team" : "Chapter 07 · The digital clinic"}</span><h2 className="section-title mt-5 max-w-2xl">Experts who listen before they treat.</h2></div>{!all&&<Link className="btn btn-secondary" href="/doctors">Meet all doctors <ArrowRight size={17}/></Link>}</Reveal>
     <div className="mt-14 grid gap-6 md:grid-cols-3">{doctors.map((d,i)=><Reveal key={d.name} delay={i*.06}><article className="group"><div className="relative aspect-[4/5] overflow-hidden rounded-[30px] bg-[var(--cyan)]"><Image src={d.image} alt={d.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"/><span className="glass absolute bottom-4 right-4 rounded-full px-3 py-2 text-[10px] font-bold">{d.exp}</span></div><h3 className="mt-5 text-2xl font-semibold">{d.name}</h3><p className="mt-1 text-sm text-[var(--teal)]">{d.role}</p></article></Reveal>)}</div>
   </div></section>;
 }
 
 export function BeforeAfter() {
   const [after, setAfter] = useState(58);
-  return <section className="section section-soft"><div className="container grid items-center gap-14 lg:grid-cols-[.8fr_1.2fr]">
-    <Reveal><span className="eyebrow">Real transformations</span><h2 className="section-title mt-5">Subtle changes. Life-changing confidence.</h2><p className="lead mt-6">Every smile is designed around the person—not a template. Drag to compare one of our recent cosmetic cases.</p><Link className="btn btn-primary mt-8" href="/gallery">View smile gallery <ArrowRight size={17}/></Link></Reveal>
+  return <section data-journey="5" className="section section-soft journey-transformation"><div className="container grid items-center gap-14 lg:grid-cols-[.8fr_1.2fr]">
+    <Reveal><span className="eyebrow">Chapter 06 · Smile transformation</span><h2 className="section-title mt-5">Subtle changes. Life-changing confidence.</h2><p className="lead mt-6">Every smile is designed around the person—not a template. Drag to compare one of our recent cosmetic cases.</p><Link className="btn btn-primary mt-8" href="/gallery">View smile gallery <ArrowRight size={17}/></Link></Reveal>
     <Reveal><div className="relative aspect-[16/10] overflow-hidden rounded-[34px] bg-[#d7f0eb] shadow-[var(--shadow)]">
       <div className="absolute inset-0 grid place-items-center bg-[linear-gradient(135deg,#d8ede8,#f7fbf9)]"><div className="text-center"><SmileGraphic bright/><b className="mt-4 block">After treatment</b></div></div>
       <div className="absolute inset-y-0 left-0 overflow-hidden bg-[#ece8df]" style={{width:`${after}%`}}><div className="grid h-full place-items-center" style={{width:`${10000/after}%`}}><div className="text-center"><SmileGraphic/><b className="mt-4 block">Before treatment</b></div></div></div>
@@ -226,9 +227,9 @@ export function Emergency() {
 }
 
 export function BookingSection() {
-  return <section className="section relative overflow-hidden bg-[radial-gradient(circle_at_10%_10%,#d8f5ef,transparent_33%),linear-gradient(135deg,#eefaf8,#f9fcfb)]">
+  return <section data-journey="7" className="section journey-booking relative overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(216,245,239,.92),transparent_33%),linear-gradient(135deg,rgba(238,250,248,.9),rgba(249,252,251,.88))]">
     <div className="container grid items-start gap-12 lg:grid-cols-[.72fr_1.28fr]">
-      <Reveal><span className="eyebrow">Book your visit</span><h2 className="section-title mt-5">Ready for a calmer dental experience?</h2><p className="lead mt-6">Choose a preferred date and treatment. Our patient care team will call to confirm the best appointment for you.</p>
+      <Reveal><span className="eyebrow">Chapter 08 · Appointment pod</span><h2 className="section-title mt-5">Ready for a calmer dental experience?</h2><p className="lead mt-6">Choose a preferred date and treatment. Our patient care team will call to confirm the best appointment for you.</p>
         <div className="mt-8 grid gap-4">{["Same-day appointments available","Transparent treatment estimates","Flexible payment options"].map(x=><div key={x} className="flex items-center gap-3 text-sm font-semibold"><Check className="rounded-full bg-white p-1 text-[var(--teal)] shadow-sm" size={25}/>{x}</div>)}</div>
       </Reveal>
       <Reveal><div className="glass rounded-[34px] p-5 md:p-8"><AppointmentForm compact/></div></Reveal>
@@ -246,8 +247,8 @@ export function FAQ() {
 }
 
 export function ContactMapSection() {
-  return <section className="section"><div className="container grid gap-8 lg:grid-cols-[.72fr_1.28fr]">
-    <Reveal><div className="card h-full p-8 md:p-10"><span className="grid h-13 w-13 place-items-center rounded-2xl bg-[var(--cyan)] text-[var(--teal)]"><MapPin size={23}/></span><span className="eyebrow mt-9">Visit Dentazone</span><h2 className="mt-5 text-4xl font-semibold md:text-5xl">Dental care close to home.</h2><p className="mt-6 leading-8 text-[var(--ink-soft)]">{clinic.address}</p><div className="mt-7 grid gap-3 text-sm"><a className="font-bold text-[var(--teal)]" href={clinic.phoneHref}>{clinic.phoneDisplay}</a><a className="font-semibold" href={clinic.mapLink} target="_blank" rel="noreferrer">Open in Google Maps →</a></div><Link href="/contact" className="btn btn-primary mt-8">Contact the clinic <ArrowRight size={17}/></Link></div></Reveal>
+  return <section data-journey="8" className="section journey-finale"><div className="container grid gap-8 lg:grid-cols-[.72fr_1.28fr]">
+    <Reveal><div className="card h-full p-8 md:p-10"><span className="grid h-13 w-13 place-items-center rounded-2xl bg-[var(--cyan)] text-[var(--teal)]"><MapPin size={23}/></span><span className="eyebrow mt-9">Chapter 09 · Return to Dentazone</span><h2 className="mt-5 text-4xl font-semibold md:text-5xl">Dental care close to home.</h2><p className="mt-6 leading-8 text-[var(--ink-soft)]">{clinic.address}</p><div className="mt-7 grid gap-3 text-sm"><a className="font-bold text-[var(--teal)]" href={clinic.phoneHref}>{clinic.phoneDisplay}</a><a className="font-semibold" href={clinic.mapLink} target="_blank" rel="noreferrer">Open in Google Maps →</a></div><Link href="/contact" className="btn btn-primary mt-8">Contact the clinic <ArrowRight size={17}/></Link></div></Reveal>
     <Reveal><div className="h-[480px] overflow-hidden rounded-[34px] bg-[var(--cyan)] shadow-[var(--shadow)]"><iframe className="h-full w-full border-0" title="Map showing Dentazone Clinic in Bagjola" loading="lazy" referrerPolicy="no-referrer-when-downgrade" src={clinic.mapEmbed}/></div></Reveal>
   </div></section>;
 }
