@@ -162,13 +162,14 @@ export function DentalScrollGallery() {
     offset: ["start start", "end end"]
   });
 
-  // Scale of the image frame zoom
-  const scale = useTransform(scrollYProgress, [0, 0.85], [0.35, 1.05]);
+  // Scale of the image content inside the box
+  const imgScale1 = useTransform(scrollYProgress, [0, 0.5], [1.12, 1.02]);
+  const imgScale2 = useTransform(scrollYProgress, [0.4, 0.95], [1.16, 1.05]);
 
-  // Reactive inset clipPath calculation
-  const insetY = useTransform(scrollYProgress, [0, 0.85], [20, 0]);
-  const insetX = useTransform(scrollYProgress, [0, 0.85], [30, 0]);
-  const radius = useTransform(scrollYProgress, [0, 0.85], [32, 0]);
+  // Reactive inset clipPath calculation to expand the box to 100% full screen
+  const insetY = useTransform(scrollYProgress, [0, 0.8], [18, 0]);
+  const insetX = useTransform(scrollYProgress, [0, 0.8], [22, 0]);
+  const radius = useTransform(scrollYProgress, [0, 0.8], [32, 0]);
   const clipPath = useTransform(
     [insetY, insetX, radius],
     ([y, x, r]) => `inset(${y}% ${x}% ${y}% ${x}% rounded ${r}px)`
@@ -181,8 +182,11 @@ export function DentalScrollGallery() {
   const x4 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : -70, reduce ? 0 : 70]);
 
   // Image crossfade opacity transforms
-  const opacity1 = useTransform(scrollYProgress, [0, 0.45, 0.55, 1], [1, 1, 0, 0]);
-  const opacity2 = useTransform(scrollYProgress, [0, 0.45, 0.55, 1], [0, 0, 1, 1]);
+  const opacity1 = useTransform(scrollYProgress, [0, 0.42, 0.52, 1], [1, 1, 0, 0]);
+  const opacity2 = useTransform(scrollYProgress, [0, 0.42, 0.52, 1], [0, 0, 1, 1]);
+
+  // Fade out text layout as the card expands to cover full screen
+  const textOpacity = useTransform(scrollYProgress, [0.5, 0.72], [1, 0]);
 
   return (
     <section ref={containerRef} className="scroll-gallery-container">
@@ -191,7 +195,6 @@ export function DentalScrollGallery() {
         <div className="scroll-gallery-images-wrapper">
           <motion.div
             style={{ 
-              scale,
               clipPath
             }}
             className="scroll-gallery-img-box"
@@ -201,15 +204,17 @@ export function DentalScrollGallery() {
               style={{ opacity: opacity1 }}
               className="absolute inset-0"
             >
-              <Image 
-                src="/images/dentazone-tools-photo.png" 
-                alt="Everyday and preventive dental care instruments" 
-                fill 
-                sizes="100vw"
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-black/20 bg-gradient-to-t from-[var(--ink)]/50 via-transparent to-black/10" />
+              <motion.div style={{ scale: imgScale1 }} className="absolute inset-0">
+                <Image 
+                  src="/images/dentazone-tools-photo.png" 
+                  alt="Everyday and preventive dental care instruments" 
+                  fill 
+                  sizes="100vw"
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+              <div className="absolute inset-0 bg-black/25 bg-gradient-to-t from-[var(--ink)]/40 via-transparent to-black/10" />
             </motion.div>
 
             {/* Image 2: Implant */}
@@ -217,21 +222,23 @@ export function DentalScrollGallery() {
               style={{ opacity: opacity2 }}
               className="absolute inset-0"
             >
-              <Image 
-                src="/images/dentazone-implant-photo.png" 
-                alt="Bespoke restorative dental implants and clear aligners" 
-                fill 
-                sizes="100vw"
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-black/20 bg-gradient-to-t from-[var(--ink)]/50 via-transparent to-black/10" />
+              <motion.div style={{ scale: imgScale2 }} className="absolute inset-0">
+                <Image 
+                  src="/images/dentazone-implant-photo.png" 
+                  alt="Bespoke restorative dental implants and clear aligners" 
+                  fill 
+                  sizes="100vw"
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+              <div className="absolute inset-0 bg-black/25 bg-gradient-to-t from-[var(--ink)]/40 via-transparent to-black/10" />
             </motion.div>
           </motion.div>
         </div>
 
         {/* Floating Typography Layout Layer */}
-        <div className="scroll-gallery-text-container">
+        <motion.div style={{ opacity: textOpacity }} className="scroll-gallery-text-container">
           {/* Row 1 */}
           <div className="scroll-gallery-row">
             <motion.p style={{ x: x1 }} className="scroll-gallery-title">Clinical</motion.p>
@@ -255,11 +262,12 @@ export function DentalScrollGallery() {
             <motion.p style={{ x: x4 }} className="scroll-gallery-sub">Care</motion.p>
             <motion.p style={{ x: x3 }} className="scroll-gallery-title">Comfort</motion.p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
+
 
 
 function MagneticLink({ href, className, children }: { href: string; className: string; children: React.ReactNode }) {
@@ -1089,3 +1097,95 @@ export function AppointmentForm({ compact = false }: { compact?: boolean }) {
     </form>
   );
 }
+
+export function FeaturedPortfolio() {
+  const portfolioRef = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: portfolioRef,
+    offset: ["start end", "end start"]
+  });
+
+  // Vertical scroll parallax offsets for staggered columns
+  const yLeft = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 60, reduce ? 0 : -60]);
+  const yRight = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : -60, reduce ? 0 : 60]);
+
+  const items = [
+    { title: "Implant Restorations", year: "2025", image: "/images/dentazone-implant-photo.png", alt: "Restorative dental implant model", col: "left" },
+    { title: "Cosmetic Veneers", year: "2024", image: "/images/dentazone-hero-photo.png", alt: "Cosmetic veneers smile showcase", col: "right" },
+    { title: "Orthodontic Aligners", year: "2025", image: "/images/dentazone-tools-photo.png", alt: "Orthodontic aligners case review", col: "left" },
+    { title: "Full Arch Rehabilitation", year: "2025", image: "/images/dental-hero.png", alt: "Complete oral rehabilitation patient profile", col: "right" },
+  ];
+
+  const leftItems = items.filter(item => item.col === "left");
+  const rightItems = items.filter(item => item.col === "right");
+
+  return (
+    <section ref={portfolioRef} className="portfolio-section">
+      <div className="container">
+        <div className="mb-14 max-w-2xl">
+          <div className="dot-heading mb-6 text-[var(--teal)]">
+            <span className="dot-heading-dot dot-heading-dot--blue" />
+            <span>Featured Cases & Gallery</span>
+          </div>
+          <h2 className="section-title">Smile transformations designed to inspire.</h2>
+        </div>
+
+        <div className="portfolio-grid">
+          {/* Left Column (staggered down) */}
+          <motion.div style={{ y: yLeft }} className="portfolio-col-left">
+            {leftItems.map((item, idx) => (
+              <article key={idx} className="portfolio-card">
+                <div className="portfolio-image-wrapper">
+                  <Image 
+                    src={item.image} 
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 800px) 100vw, 50vw"
+                    className="portfolio-img"
+                  />
+                </div>
+                <div className="portfolio-info">
+                  <div className="portfolio-title-group">
+                    <h3 className="portfolio-title">{item.title}</h3>
+                    <span className="portfolio-year">{item.year}</span>
+                  </div>
+                  <div className="portfolio-arrow-circle">
+                    <ArrowRight size={18} style={{ transform: "rotate(-45deg)" }} />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </motion.div>
+
+          {/* Right Column (staggered up) */}
+          <motion.div style={{ y: yRight }} className="portfolio-col-right">
+            {rightItems.map((item, idx) => (
+              <article key={idx} className="portfolio-card">
+                <div className="portfolio-image-wrapper">
+                  <Image 
+                    src={item.image} 
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 800px) 100vw, 50vw"
+                    className="portfolio-img"
+                  />
+                </div>
+                <div className="portfolio-info">
+                  <div className="portfolio-title-group">
+                    <h3 className="portfolio-title">{item.title}</h3>
+                    <span className="portfolio-year">{item.year}</span>
+                  </div>
+                  <div className="portfolio-arrow-circle">
+                    <ArrowRight size={18} style={{ transform: "rotate(-45deg)" }} />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
