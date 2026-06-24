@@ -3,6 +3,7 @@ import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Footer, Header, FloatingActions } from "@/components/site-shell";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { PreloaderWrapper } from "@/components/preloader";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-body", display: "swap" });
@@ -18,13 +19,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body className={`${outfit.variable} ${jakarta.variable}`}>
         <a className="skip-link" href="#main">Skip to content</a>
-        <SmoothScroll>
-          <Header />
-          <main id="main">{children}</main>
-          <Footer />
-          <FloatingActions />
-        </SmoothScroll>
+        <PreloaderWrapper>
+          <SmoothScroll>
+            <Header />
+            <main id="main">{children}</main>
+            <Footer />
+            <FloatingActions />
+          </SmoothScroll>
+        </PreloaderWrapper>
       </body>
     </html>
   );
 }
+
