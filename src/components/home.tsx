@@ -162,9 +162,14 @@ export function DentalScrollGallery() {
     offset: ["start start", "end end"]
   });
 
+
+
+  // Scale of the image container zoom matching the reference scale(0.2)
+  const scale = useTransform(scrollYProgress, [0, 0.8], [0.22, 1.0]);
+
   // Scale of the image content inside the box
-  const imgScale1 = useTransform(scrollYProgress, [0, 0.5], [1.12, 1.02]);
-  const imgScale2 = useTransform(scrollYProgress, [0.4, 0.95], [1.16, 1.05]);
+  const imgScale1 = useTransform(scrollYProgress, [0, 0.5], [1.16, 1.04]);
+  const imgScale2 = useTransform(scrollYProgress, [0.4, 0.95], [1.18, 1.06]);
 
   // Reactive inset clipPath calculation to expand the box to 100% full screen
   const insetY = useTransform(scrollYProgress, [0, 0.8], [18, 0]);
@@ -175,11 +180,11 @@ export function DentalScrollGallery() {
     ([y, x, r]) => `inset(${y}% ${x}% ${y}% ${x}% rounded ${r}px)`
   );
 
-  // Parallax horizontal shifts for textual rows
-  const x1 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 80, reduce ? 0 : -80]);
-  const x2 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : -80, reduce ? 0 : 80]);
-  const x3 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 60, reduce ? 0 : -60]);
-  const x4 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : -70, reduce ? 0 : 70]);
+  // Precise vertical/horizontal slide-ins matching Haven Constructions
+  const y1 = useTransform(scrollYProgress, [0, 0.45], [reduce ? 0 : 60, 0]);
+  const x2 = useTransform(scrollYProgress, [0, 0.45], [reduce ? 0 : -60, 0]);
+  const y3 = useTransform(scrollYProgress, [0, 0.45], [reduce ? 0 : -60, 0]);
+  const x4 = useTransform(scrollYProgress, [0, 0.45], [reduce ? 0 : 60, 0]);
 
   // Image crossfade opacity transforms
   const opacity1 = useTransform(scrollYProgress, [0, 0.42, 0.52, 1], [1, 1, 0, 0]);
@@ -195,6 +200,7 @@ export function DentalScrollGallery() {
         <div className="scroll-gallery-images-wrapper">
           <motion.div
             style={{ 
+              scale,
               clipPath
             }}
             className="scroll-gallery-img-box"
@@ -240,27 +246,31 @@ export function DentalScrollGallery() {
         {/* Floating Typography Layout Layer */}
         <motion.div style={{ opacity: textOpacity }} className="scroll-gallery-text-container">
           {/* Row 1 */}
-          <div className="scroll-gallery-row">
-            <motion.p style={{ x: x1 }} className="scroll-gallery-title">Clinical</motion.p>
-            <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Est. 2024</motion.p>
+          <div className="scroll-gallery-row justify-start">
+            <div className="reveal-wrapper">
+              <motion.h2 style={{ y: y1 }} className="scroll-gallery-title">Bespoke</motion.h2>
+            </div>
           </div>
 
           {/* Row 2 */}
-          <div className="scroll-gallery-row">
-            <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Dentazone</motion.p>
-            <motion.p style={{ x: x1 }} className="scroll-gallery-title">Precision</motion.p>
+          <div className="scroll-gallery-row justify-end">
+            <div className="reveal-wrapper">
+              <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Bagjola</motion.p>
+            </div>
           </div>
 
           {/* Row 3 */}
-          <div className="scroll-gallery-row">
-            <motion.p style={{ x: x3 }} className="scroll-gallery-title">Bespoke</motion.p>
-            <motion.p style={{ x: x4 }} className="scroll-gallery-sub">Bagjola</motion.p>
+          <div className="scroll-gallery-row justify-start">
+            <div className="reveal-wrapper">
+              <motion.h2 style={{ y: y3 }} className="scroll-gallery-title">Precision</motion.h2>
+            </div>
           </div>
 
           {/* Row 4 */}
-          <div className="scroll-gallery-row">
-            <motion.p style={{ x: x4 }} className="scroll-gallery-sub">Care</motion.p>
-            <motion.p style={{ x: x3 }} className="scroll-gallery-title">Comfort</motion.p>
+          <div className="scroll-gallery-row justify-end">
+            <div className="reveal-wrapper">
+              <motion.p style={{ x: x4 }} className="scroll-gallery-sub">Est. 2024</motion.p>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -1145,13 +1155,15 @@ export function FeaturedPortfolio() {
                     className="portfolio-img"
                   />
                 </div>
-                <div className="portfolio-info">
-                  <div className="portfolio-title-group">
-                    <h3 className="portfolio-title">{item.title}</h3>
+                <div className="portfolio-overlay">
+                  <div className="portfolio-content-row">
+                    <div className="portfolio-title-group">
+                      <span className="portfolio-arrow">
+                        <ArrowRight size={26} style={{ transform: "rotate(-45deg)" }} />
+                      </span>
+                      <h3 className="portfolio-title">{item.title}</h3>
+                    </div>
                     <span className="portfolio-year">{item.year}</span>
-                  </div>
-                  <div className="portfolio-arrow-circle">
-                    <ArrowRight size={18} style={{ transform: "rotate(-45deg)" }} />
                   </div>
                 </div>
               </article>
@@ -1171,13 +1183,15 @@ export function FeaturedPortfolio() {
                     className="portfolio-img"
                   />
                 </div>
-                <div className="portfolio-info">
-                  <div className="portfolio-title-group">
-                    <h3 className="portfolio-title">{item.title}</h3>
+                <div className="portfolio-overlay">
+                  <div className="portfolio-content-row">
+                    <div className="portfolio-title-group">
+                      <span className="portfolio-arrow">
+                        <ArrowRight size={26} style={{ transform: "rotate(-45deg)" }} />
+                      </span>
+                      <h3 className="portfolio-title">{item.title}</h3>
+                    </div>
                     <span className="portfolio-year">{item.year}</span>
-                  </div>
-                  <div className="portfolio-arrow-circle">
-                    <ArrowRight size={18} style={{ transform: "rotate(-45deg)" }} />
                   </div>
                 </div>
               </article>
