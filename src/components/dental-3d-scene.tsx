@@ -88,7 +88,7 @@ function seeded(index: number, channel: number) {
 function stage(group: THREE.Group | null, state: MotionState, index: number, delta: number, position: [number, number, number]) {
   if (!group) return 0;
   const weight = weightAt(state, index);
-  group.visible = weight > 0.015;
+  group.visible = weight > 0.25;
   const speed = 1 - Math.exp(-delta * 5);
   group.position.lerp(new THREE.Vector3(...position), speed);
   const scale = THREE.MathUtils.lerp(group.scale.x, 0.72 + weight * 0.28, speed);
