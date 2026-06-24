@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Activity, ArrowRight, Award, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardCheck, Clock3, Heart, MapPin, Microscope, MoveRight, PhoneCall, Play, Quote, ScanLine, ShieldCheck, Sparkles, Star, WandSparkles } from "lucide-react";
+import { Activity, ArrowRight, Award, Baby, Bone, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardCheck, Clock3, Heart, HeartPulse, MapPin, Microscope, MoveRight, PhoneCall, Quote, ScanLine, ShieldCheck, Smile, Sparkles, Star, Stethoscope, Syringe, WandSparkles, Waves, Zap } from "lucide-react";
 import { clinic, doctors, faqs, posts, reviews, services } from "@/lib/data";
 import { Counter, Reveal } from "./motion";
 
@@ -15,16 +15,16 @@ export function Hero() {
   const visualY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 42]);
   const visualScale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : .97]);
   const enter = (delay: number) => ({ initial: reduce ? false : { opacity: 0, y: 24, filter: "blur(6px)" }, animate: { opacity: 1, y: 0, filter: "blur(0px)" }, transition: { type: "spring" as const, duration: .65, bounce: 0, delay } });
-  return <section ref={heroRef} className="relative min-h-[760px] overflow-hidden bg-[radial-gradient(circle_at_80%_16%,#d9f7f2_0,transparent_35%),linear-gradient(135deg,#fbfcfa_35%,#edf9f9_100%)] py-16 lg:min-h-[820px] lg:py-24">
+  return <section ref={heroRef} className="hero-3d relative min-h-[800px] overflow-hidden py-16 lg:min-h-[870px] lg:py-24">
     <div className="pointer-events-none absolute -left-32 top-44 h-80 w-80 rounded-full border border-[var(--teal)]/10" />
     <div className="container grid items-center gap-14 lg:grid-cols-[1.1fr_.9fr]">
       <div className="relative z-10">
         <motion.div {...enter(.05)} className="eyebrow mb-7">Trusted modern dentistry</motion.div>
-        <motion.h1 {...enter(.12)} className="display max-w-[800px]">Advanced Dental Care for a <span className="text-[var(--teal)]">Confident Smile</span></motion.h1>
-        <motion.p {...enter(.2)} className="lead mt-7 max-w-[620px]">Painless, precise and personal dental care—powered by advanced technology and a team you can trust.</motion.p>
+        <motion.h1 {...enter(.12)} className="display max-w-[800px]">Advanced Dental Care with <span className="text-[var(--teal)]">3D Motion Experience</span></motion.h1>
+        <motion.p {...enter(.2)} className="lead mt-7 max-w-[620px]">Modern, painless, and trusted dental treatments designed for your perfect smile.</motion.p>
         <motion.div {...enter(.28)} className="mt-9 flex flex-col gap-3 sm:flex-row">
-          <Link className="btn btn-primary" href="/appointment"><CalendarDays size={18}/> Book Appointment</Link>
-          <Link className="btn btn-secondary" href="/treatments">View Treatments <ArrowRight size={18}/></Link>
+          <MagneticLink className="btn btn-primary" href="/appointment"><CalendarDays size={18}/> Book Appointment</MagneticLink>
+          <MagneticLink className="btn btn-secondary" href="/treatments">Explore Treatments <ArrowRight size={18}/></MagneticLink>
         </motion.div>
         <motion.div {...enter(.36)} className="mt-10 flex flex-wrap items-center gap-5 text-sm text-[var(--ink-soft)]">
           <span className="flex items-center gap-2"><span className="flex -space-x-2">{["DZ","DC","WB"].map(x=><span key={x} className="grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-[var(--cyan)] text-[9px] font-bold text-[var(--teal)]">{x}</span>)}</span> Complete dental team</span>
@@ -32,18 +32,32 @@ export function Hero() {
         </motion.div>
       </div>
       <motion.div style={{ y: visualY, scale: visualScale }} initial={reduce ? false : { opacity: 0, scale: .96, filter: "blur(8px)" }} animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} transition={{ type: "spring", duration: .85, bounce: 0, delay: .18 }} className="relative mx-auto w-full max-w-[620px]">
-        <div className="relative aspect-[1.05] overflow-hidden rounded-[44px] bg-[#e7f6f4] shadow-[0_40px_100px_rgba(8,90,95,.18)]">
-          <Image src="/images/dental-hero.png" alt="Pearlescent tooth and dental mirror in a calm clinical setting" fill priority sizes="(max-width: 1024px) 100vw, 48vw" className="object-cover"/>
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)]/15 to-transparent"/>
-          <button className="absolute bottom-6 right-6 grid h-14 w-14 place-items-center rounded-full bg-white text-[var(--teal)] shadow-xl" aria-label="Play clinic introduction"><Play size={18} fill="currentColor"/></button>
+        <div className="hero-3d-stage relative aspect-[1.05] overflow-hidden rounded-[44px]">
+          <div className="absolute bottom-7 left-7 rounded-full bg-white/70 px-4 py-2 text-[10px] font-bold uppercase tracking-[.15em] text-[var(--teal)] backdrop-blur-xl">Scroll to move the dental world</div>
+          <div className="absolute right-7 top-7 grid h-12 w-12 place-items-center rounded-2xl bg-white/65 text-[var(--teal)] backdrop-blur-xl"><Sparkles size={22}/></div>
         </div>
         <StatFloat className="-left-4 top-9 lg:-left-16" icon={<Award/>} value="20" label="Dental Services" delay={.7}/>
-        <StatFloat className="-right-3 top-[42%] lg:-right-12" icon={<Heart/>} value="Local" label="Patient-first Care" delay={.85}/>
+        <StatFloat className="-right-3 top-[42%] lg:-right-12" icon={<Heart/>} value="Trusted" label="Patient-first Care" delay={.85}/>
         <StatFloat className="bottom-5 left-5 lg:-left-8" icon={<PhoneCall/>} value="Call" label={clinic.phoneDisplay} delay={1}/>
         <motion.span initial={reduce ? false : { opacity: 0, rotate: -12, scale: .9 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} transition={{ type:"spring",duration:.6,bounce:0,delay:1.05 }} className="glass absolute -top-5 right-10 hidden h-14 w-14 place-items-center rounded-2xl text-[var(--teal)] md:grid"><Sparkles size={24}/></motion.span>
       </motion.div>
     </div>
   </section>;
+}
+
+function MagneticLink({ href, className, children }: { href: string; className: string; children: React.ReactNode }) {
+  const reduce = useReducedMotion();
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  return <motion.div
+    animate={reduce ? undefined : offset}
+    transition={{ type: "spring", stiffness: 350, damping: 24, mass: .35 }}
+    onMouseMove={(event) => {
+      if (reduce) return;
+      const rect = event.currentTarget.getBoundingClientRect();
+      setOffset({ x: (event.clientX - rect.left - rect.width / 2) * .12, y: (event.clientY - rect.top - rect.height / 2) * .12 });
+    }}
+    onMouseLeave={() => setOffset({ x: 0, y: 0 })}
+  ><Link className={className} href={href}>{children}</Link></motion.div>;
 }
 
 function StatFloat({ className, icon, value, label, delay }: { className: string; icon: React.ReactNode; value: string; label: string; delay: number }) {
@@ -60,8 +74,22 @@ export function TrustStrip() {
 }
 
 export function ServicesSection({ all = false }: { all?: boolean }) {
-  const list = all ? services : services.slice(0, 6);
-  return <section className="section" id="services"><div className="container">
+  const featured = [
+    { title:"General Dentistry", desc:"Complete preventive and everyday dental care.", icon:Stethoscope },
+    { title:"Root Canal Treatment", desc:"Modern care focused on relief and tooth preservation.", icon:Syringe },
+    { title:"Dental Implants", desc:"Stable replacements planned for natural function.", icon:Bone },
+    { title:"Teeth Whitening", desc:"Professional brightening for a refreshed smile.", icon:Sparkles },
+    { title:"Braces & Aligners", desc:"Smile alignment with modern orthodontic options.", icon:Waves },
+    { title:"Cosmetic Dentistry", desc:"Aesthetic treatments tailored to your smile.", icon:WandSparkles },
+    { title:"Kids Dentistry", desc:"Friendly dental care for children and growing smiles.", icon:Baby },
+    { title:"Gum Treatment", desc:"Focused care for healthier gums and foundations.", icon:HeartPulse },
+    { title:"Tooth Extraction", desc:"Carefully planned simple and surgical extraction.", icon:Zap },
+    { title:"Smile Designing", desc:"Thoughtful planning for balanced smile aesthetics.", icon:Smile },
+    { title:"Crown & Bridge", desc:"Restorations for strength, function and appearance.", icon:Award },
+    { title:"Emergency Dental Care", desc:"Direct guidance when a dental concern cannot wait.", icon:Activity },
+  ];
+  const list = all ? services : featured;
+  return <section className="section section-translucent" id="services"><div className="container">
     <Reveal className="mx-auto max-w-3xl text-center"><span className="eyebrow">Complete dental care</span><h2 className="section-title mt-5">Everything your smile needs, under one roof.</h2><p className="lead mx-auto mt-6 max-w-2xl">From routine prevention to full smile transformation, every treatment is planned with clarity and delivered with care.</p></Reveal>
     <div className="mt-14 grid gap-5 [perspective:1200px] md:grid-cols-2 lg:grid-cols-3">{list.map((s,i)=><Reveal key={s.title} delay={(i%3)*.05}><motion.article whileHover={{ y: -8, rotateX: -2.5, rotateY: i%2===0?2.5:-2.5, scale:1.012 }} transition={{ type:"spring",duration:.32,bounce:0 }} style={{transformStyle:"preserve-3d"}} className="card soft-3d-card group h-full p-7">
       <div className="mb-8 flex items-start justify-between"><span className="grid h-13 w-13 place-items-center rounded-2xl bg-[var(--cyan)] text-[var(--teal)]"><s.icon size={24}/></span><ArrowRight className="text-[var(--ink)]/25 transition-transform group-hover:translate-x-1 group-hover:text-[var(--teal)]" size={20}/></div>

@@ -19,7 +19,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const reduce = useReducedMotion();
   return <>
-    <div className="hidden bg-[var(--ink)] text-white lg:block">
+    <div className="relative z-20 hidden bg-[var(--ink)] text-white lg:block">
       <div className="container flex h-9 items-center justify-between text-[11px]">
         <span className="flex items-center gap-2"><Clock3 size={13}/> Kolsur More · Basirhat Road</span>
         <span>Call Dentazone: <a className="font-bold" href={clinic.phoneHref}>{clinic.phoneDisplay}</a></span>
