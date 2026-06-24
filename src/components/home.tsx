@@ -55,14 +55,44 @@ export function Hero() {
       <div className="pointer-events-none absolute -left-32 top-44 h-80 w-80 rounded-full border border-[var(--teal)]/10" />
       <div className="container grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="relative z-10">
-          <motion.div {...enter(0.05)} className="eyebrow mb-8">Chapter 01 · The perfect smile universe</motion.div>
-          <motion.h1 {...enter(0.1)} className="display max-w-[800px]">
-            Advanced Dental Care with <span className="text-[var(--teal)] drop-shadow-[0_2px_10px_var(--teal-glow)]">3D Motion Experience</span>
-          </motion.h1>
-          <motion.p {...enter(0.15)} className="lead mt-6 max-w-[620px]">
-            Modern, painless, and trusted dental treatments designed for your perfect smile. Experience clinical excellence.
-          </motion.p>
-          <motion.div {...enter(0.2)} className="mt-8 flex flex-col gap-4 sm:flex-row">
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...springSnappy, delay: 0.05 }}
+            className="dot-heading mb-8 text-[var(--teal)]"
+          >
+            <motion.span 
+              initial={reduce ? false : { scale: 0, rotate: -45 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.12 }}
+              className="dot-heading-dot dot-heading-dot--blue"
+            />
+            <span>Chapter 01 · The perfect smile universe</span>
+          </motion.div>
+
+          <div className="reveal-wrapper">
+            <motion.h1 
+              initial={reduce ? false : { y: "105%" }}
+              animate={{ y: 0 }}
+              transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.1 }}
+              className="display max-w-[800px]"
+            >
+              Advanced Dental Care with <span className="text-[var(--teal)] drop-shadow-[0_2px_10px_var(--teal-glow)]">Bespoke Precision</span>
+            </motion.h1>
+          </div>
+
+          <div className="reveal-wrapper mt-6">
+            <motion.p 
+              initial={reduce ? false : { y: "105%" }}
+              animate={{ y: 0 }}
+              transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.16 }}
+              className="lead max-w-[620px]"
+            >
+              Modern, painless, and trusted dental treatments designed for your perfect smile. Experience clinical excellence.
+            </motion.p>
+          </div>
+
+          <motion.div {...enter(0.22)} className="mt-8 flex flex-col gap-4 sm:flex-row">
             <MagneticLink className="btn btn-primary" href="/appointment">
               <CalendarDays size={18}/> Book Appointment
             </MagneticLink>
@@ -70,7 +100,7 @@ export function Hero() {
               Explore Treatments <ArrowRight size={18}/>
             </MagneticLink>
           </motion.div>
-          <motion.div {...enter(0.25)} className="mt-10 flex flex-wrap items-center gap-6 text-sm text-[var(--ink-soft)]">
+          <motion.div {...enter(0.28)} className="mt-10 flex flex-wrap items-center gap-6 text-sm text-[var(--ink-soft)]">
             <span className="flex items-center gap-2">
               <span className="flex -space-x-2">
                 {["DZ","DC","WB"].map(x => (
@@ -91,12 +121,14 @@ export function Hero() {
         
         <motion.div 
           style={{ y: visualY, scale: visualScale }} 
-          initial={reduce ? false : { opacity: 0, scale: 0.96, filter: "blur(6px)" }} 
-          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} 
-          transition={{ ...springSnappy, delay: 0.1 }} 
           className="relative mx-auto w-full max-w-[580px]"
         >
-          <div className="hero-3d-stage relative aspect-[1.02] overflow-hidden rounded-[32px]">
+          <motion.div 
+            initial={reduce ? false : { clipPath: "inset(0% 0% 100% 0%)", scale: 1.05 }} 
+            animate={{ clipPath: "inset(0% 0% 0% 0%)", scale: 1 }} 
+            transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
+            className="hero-3d-stage relative aspect-[1.02] overflow-hidden rounded-[32px]"
+          >
             <div className="absolute inset-0">
               <Image 
                 src="/images/dentazone-hero-photo.png" 
@@ -111,85 +143,124 @@ export function Hero() {
             <div className="absolute right-6 top-6 grid h-12 w-12 place-items-center rounded-2xl bg-white/70 text-[var(--teal)] backdrop-blur-xl border border-white/40">
               <Sparkles size={22}/>
             </div>
-          </div>
+          </motion.div>
           
-          <StatFloat className="-left-4 top-8 lg:-left-10" icon={<Award/>} value="20" label="Dental Services" delay={0.3}/>
-          <StatFloat className="-right-3 top-[42%] lg:-right-8" icon={<Heart/>} value="Trusted" label="Patient-first Care" delay={0.4}/>
-          <StatFloat className="bottom-6 left-6 lg:-left-2" icon={<PhoneCall/>} value="Call" label={clinic.phoneDisplay} delay={0.5}/>
+          <StatFloat className="-left-4 top-8 lg:-left-10" icon={<Award/>} value="20" label="Dental Services" delay={0.4}/>
+          <StatFloat className="-right-3 top-[42%] lg:-right-8" icon={<Heart/>} value="Trusted" label="Patient-first Care" delay={0.48}/>
+          <StatFloat className="bottom-6 left-6 lg:-left-2" icon={<PhoneCall/>} value="Call" label={clinic.phoneDisplay} delay={0.56}/>
         </motion.div>
       </div>
     </section>
   );
 }
 
-export function RealDentalMotionShowcase() {
-  const ref = useRef<HTMLElement>(null);
+export function DentalScrollGallery() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  
-  // Highly refined, subtle 2D offsets
-  const leftY = useTransform(scrollYProgress, [0, 0.5, 1], reduce ? [0, 0, 0] : [30, 0, -20]);
-  const rightY = useTransform(scrollYProgress, [0, 0.5, 1], reduce ? [0, 0, 0] : [50, 5, -30]);
-  const leftRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-2, 1.5]);
-  const rightRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [2, -1.5]);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  // Scale of the image frame zoom
+  const scale = useTransform(scrollYProgress, [0, 0.85], [0.35, 1.05]);
+
+  // Reactive inset clipPath calculation
+  const insetY = useTransform(scrollYProgress, [0, 0.85], [20, 0]);
+  const insetX = useTransform(scrollYProgress, [0, 0.85], [30, 0]);
+  const radius = useTransform(scrollYProgress, [0, 0.85], [32, 0]);
+  const clipPath = useTransform(
+    [insetY, insetX, radius],
+    ([y, x, r]) => `inset(${y}% ${x}% ${y}% ${x}% rounded ${r}px)`
+  );
+
+  // Parallax horizontal shifts for textual rows
+  const x1 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 80, reduce ? 0 : -80]);
+  const x2 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : -80, reduce ? 0 : 80]);
+  const x3 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 60, reduce ? 0 : -60]);
+  const x4 = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : -70, reduce ? 0 : 70]);
+
+  // Image crossfade opacity transforms
+  const opacity1 = useTransform(scrollYProgress, [0, 0.45, 0.55, 1], [1, 1, 0, 0]);
+  const opacity2 = useTransform(scrollYProgress, [0, 0.45, 0.55, 1], [0, 0, 1, 1]);
 
   return (
-    <section ref={ref} className="section overflow-hidden bg-[linear-gradient(180deg,rgba(249,252,251,0.92),rgba(232,246,244,0.85))] flex items-center">
-      <div className="container py-4">
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={springSnappy}
-          className="mx-auto max-w-3xl text-center"
-        >
-          <h2 className="section-title">Real tools. Modern treatment.</h2>
-          <p className="lead mt-5">Explore the materials and technology behind restorative, surgical and everyday dental care.</p>
-        </motion.div>
-        
-        <div className="mt-12 grid gap-8 md:grid-cols-2 [perspective:1400px]">
-          <motion.figure 
-            style={{ y: leftY, rotateZ: leftRotate }} 
-            className="photo-motion-card"
+    <section ref={containerRef} className="scroll-gallery-container">
+      <div className="scroll-gallery-sticky">
+        {/* Full Viewport Pinned Interactive Image Block */}
+        <div className="scroll-gallery-images-wrapper">
+          <motion.div
+            style={{ 
+              scale,
+              clipPath
+            }}
+            className="scroll-gallery-img-box"
           >
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[22px]">
+            {/* Image 1: Tools */}
+            <motion.div 
+              style={{ opacity: opacity1 }}
+              className="absolute inset-0"
+            >
               <Image 
                 src="/images/dentazone-tools-photo.png" 
-                alt="Real toothbrush, dental tools, floss, toothpaste and aligner in a premium clinical composition" 
+                alt="Everyday and preventive dental care instruments" 
                 fill 
-                sizes="(max-width: 768px) 100vw, 50vw" 
+                sizes="100vw"
                 className="object-cover"
+                priority
               />
-            </div>
-            <figcaption>
-              <b>Everyday & preventive care</b>
-              <span>Cleaning, diagnostics, aligners and precision instruments.</span>
-            </figcaption>
-          </motion.figure>
-          
-          <motion.figure 
-            style={{ y: rightY, rotateZ: rightRotate }} 
-            className="photo-motion-card md:mt-16"
-          >
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[22px]">
+              <div className="absolute inset-0 bg-black/20 bg-gradient-to-t from-[var(--ink)]/50 via-transparent to-black/10" />
+            </motion.div>
+
+            {/* Image 2: Implant */}
+            <motion.div 
+              style={{ opacity: opacity2 }}
+              className="absolute inset-0"
+            >
               <Image 
                 src="/images/dentazone-implant-photo.png" 
-                alt="Real dental implant, ceramic crown, clear aligner and braces model" 
+                alt="Bespoke restorative dental implants and clear aligners" 
                 fill 
-                sizes="(max-width: 768px) 100vw, 50vw" 
+                sizes="100vw"
                 className="object-cover"
+                priority
               />
-            </div>
-            <figcaption>
-              <b>Restorative & surgical care</b>
-              <span>Implants, crowns, orthodontics and rehabilitation planning.</span>
-            </figcaption>
-          </motion.figure>
+              <div className="absolute inset-0 bg-black/20 bg-gradient-to-t from-[var(--ink)]/50 via-transparent to-black/10" />
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Floating Typography Layout Layer */}
+        <div className="scroll-gallery-text-container">
+          {/* Row 1 */}
+          <div className="scroll-gallery-row">
+            <motion.p style={{ x: x1 }} className="scroll-gallery-title">Clinical</motion.p>
+            <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Est. 2024</motion.p>
+          </div>
+
+          {/* Row 2 */}
+          <div className="scroll-gallery-row">
+            <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Dentazone</motion.p>
+            <motion.p style={{ x: x1 }} className="scroll-gallery-title">Precision</motion.p>
+          </div>
+
+          {/* Row 3 */}
+          <div className="scroll-gallery-row">
+            <motion.p style={{ x: x3 }} className="scroll-gallery-title">Bespoke</motion.p>
+            <motion.p style={{ x: x4 }} className="scroll-gallery-sub">Bagjola</motion.p>
+          </div>
+
+          {/* Row 4 */}
+          <div className="scroll-gallery-row">
+            <motion.p style={{ x: x4 }} className="scroll-gallery-sub">Care</motion.p>
+            <motion.p style={{ x: x3 }} className="scroll-gallery-title">Comfort</motion.p>
+          </div>
         </div>
       </div>
     </section>
   );
 }
+
 
 function MagneticLink({ href, className, children }: { href: string; className: string; children: React.ReactNode }) {
   const reduce = useReducedMotion();
