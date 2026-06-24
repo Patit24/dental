@@ -33,6 +33,10 @@ export function Hero() {
       </div>
       <motion.div style={{ y: visualY, scale: visualScale }} initial={reduce ? false : { opacity: 0, scale: .96, filter: "blur(8px)" }} animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} transition={{ type: "spring", duration: .85, bounce: 0, delay: .18 }} className="relative mx-auto w-full max-w-[620px]">
         <div className="hero-3d-stage relative aspect-[1.05] overflow-hidden rounded-[44px]">
+          <motion.div className="absolute inset-0" whileHover={reduce ? undefined : { rotateY: -3, rotateX: 2, scale: 1.025 }} transition={{ type:"spring",duration:.4,bounce:0 }} style={{ transformPerspective: 1100 }}>
+            <Image src="/images/dentazone-hero-photo.png" alt="Photorealistic dental tooth model and professional instruments" fill priority sizes="(max-width: 1024px) 100vw, 48vw" className="object-cover"/>
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)]/14 via-transparent to-white/5"/>
+          </motion.div>
           <div className="absolute bottom-7 left-7 rounded-full bg-white/70 px-4 py-2 text-[10px] font-bold uppercase tracking-[.15em] text-[var(--teal)] backdrop-blur-xl">Scroll to move the dental world</div>
           <div className="absolute right-7 top-7 grid h-12 w-12 place-items-center rounded-2xl bg-white/65 text-[var(--teal)] backdrop-blur-xl"><Sparkles size={22}/></div>
         </div>
@@ -41,6 +45,31 @@ export function Hero() {
         <StatFloat className="bottom-5 left-5 lg:-left-8" icon={<PhoneCall/>} value="Call" label={clinic.phoneDisplay} delay={1}/>
         <motion.span initial={reduce ? false : { opacity: 0, rotate: -12, scale: .9 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} transition={{ type:"spring",duration:.6,bounce:0,delay:1.05 }} className="glass absolute -top-5 right-10 hidden h-14 w-14 place-items-center rounded-2xl text-[var(--teal)] md:grid"><Sparkles size={24}/></motion.span>
       </motion.div>
+    </div>
+  </section>;
+}
+
+export function RealDentalMotionShowcase() {
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const leftY = useTransform(scrollYProgress, [0, .5, 1], reduce ? [0,0,0] : [90, 0, -60]);
+  const rightY = useTransform(scrollYProgress, [0, .5, 1], reduce ? [0,0,0] : [150, 10, -100]);
+  const leftRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0,0] : [-5, 4]);
+  const rightRotate = useTransform(scrollYProgress, [0, 1], reduce ? [0,0] : [6, -4]);
+  return <section ref={ref} className="section overflow-hidden bg-[linear-gradient(180deg,#f9fcfb,#eaf8f6)]">
+    <div className="container">
+      <Reveal className="mx-auto max-w-3xl text-center"><span className="eyebrow">Real dental technology</span><h2 className="section-title mt-5">Real tools. Modern treatment. Designed in motion.</h2><p className="lead mt-6">Explore the materials and technology behind restorative, surgical and everyday dental care.</p></Reveal>
+      <div className="mt-14 grid gap-6 md:grid-cols-2 [perspective:1400px]">
+        <motion.figure style={{ y:leftY, rotateZ:leftRotate, rotateY:-3 }} whileHover={reduce?undefined:{scale:1.02,rotateY:1}} transition={{type:"spring",duration:.35,bounce:0}} className="photo-motion-card">
+          <div className="relative aspect-[3/2] overflow-hidden rounded-[30px]"><Image src="/images/dentazone-tools-photo.png" alt="Real toothbrush, dental tools, floss, toothpaste and aligner in a premium clinical composition" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover"/></div>
+          <figcaption><b>Everyday & preventive care</b><span>Cleaning, diagnostics, aligners and precision instruments.</span></figcaption>
+        </motion.figure>
+        <motion.figure style={{ y:rightY, rotateZ:rightRotate, rotateY:3 }} whileHover={reduce?undefined:{scale:1.02,rotateY:-1}} transition={{type:"spring",duration:.35,bounce:0}} className="photo-motion-card md:mt-24">
+          <div className="relative aspect-[3/2] overflow-hidden rounded-[30px]"><Image src="/images/dentazone-implant-photo.png" alt="Real dental implant, ceramic crown, clear aligner and braces model" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover"/></div>
+          <figcaption><b>Restorative & surgical care</b><span>Implants, crowns, orthodontics and rehabilitation planning.</span></figcaption>
+        </motion.figure>
+      </div>
     </div>
   </section>;
 }

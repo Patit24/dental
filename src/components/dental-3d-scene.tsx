@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { Image as DreiImage, RoundedBox } from "@react-three/drei";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -14,6 +14,8 @@ type MotionState = {
   mobile: boolean;
   reduced: boolean;
 };
+
+type PhotoKind = "hero" | "tools" | "implant";
 
 const aqua = new THREE.MeshPhysicalMaterial({
   color: "#60d5d0", roughness: 0.24, metalness: 0.06, transmission: 0.08,
@@ -45,6 +47,47 @@ function follow(
   group.rotation.z = THREE.MathUtils.lerp(group.rotation.z, rotation[2], speed);
   const nextScale = THREE.MathUtils.lerp(group.scale.x, scale, speed);
   group.scale.setScalar(nextScale);
+}
+
+function PhotoCard({ state, kind, url }: { state: MotionState; kind: PhotoKind; url: string }) {
+  const ref = useRef<THREE.Group>(null);
+  const imageRef = useRef<THREE.Mesh>(null);
+  useFrame(({ pointer }, delta) => {
+    if (!ref.current) return;
+    const p = state.progress.current;
+    const mouseX = state.mobile || state.reduced ? 0 : pointer.x * 0.14;
+    const mouseY = state.mobile || state.reduced ? 0 : pointer.y * 0.1;
+
+    if (kind === "hero") {
+      const travel = THREE.MathUtils.smoothstep(p, 0, 0.14);
+      follow(ref.current, [2.25 - travel * 4.9 + mouseX, 0.1 + travel * 0.9 + mouseY, -1.25 - travel], [0.03 + mouseY, -0.13 + mouseX, -0.03 + travel * 0.18], delta, state.mobile ? 0.58 : 1);
+      ref.current.visible = p < 0.27;
+    } else if (kind === "tools") {
+      const enter = THREE.MathUtils.smoothstep(p, 0.055, 0.14);
+      const leave = THREE.MathUtils.smoothstep(p, 0.25, 0.38);
+      follow(ref.current, [5.8 - enter * 3.3 - leave * 5.4, -0.25 + enter * 0.8 + mouseY, -1.6 - leave], [0.08, -0.18 + mouseX, -0.08 + enter * 0.12], delta, state.mobile ? 0.5 : 0.84);
+      ref.current.visible = p > 0.035 && p < 0.43;
+    } else {
+      const enter = THREE.MathUtils.smoothstep(p, 0.26, 0.42);
+      const leave = THREE.MathUtils.smoothstep(p, 0.58, 0.72);
+      follow(ref.current, [-5.6 + enter * 3.4 + leave * 5.2, -0.55 + enter * 1.2 + mouseY, -1.75 - leave], [-0.06, 0.15 + mouseX, 0.07 - enter * 0.12], delta, state.mobile ? 0.5 : 0.8);
+      ref.current.visible = p > 0.22 && p < 0.76;
+    }
+  });
+
+  return <group ref={ref}>
+    <RoundedBox args={[5.02, 3.35, 0.13]} radius={0.24} smoothness={5} position={[0, -0.04, -0.1]}>
+      <meshPhysicalMaterial color="#effaf8" roughness={0.22} metalness={0.02} clearcoat={1} />
+    </RoundedBox>
+    <DreiImage
+      ref={imageRef}
+      url={url}
+      scale={[4.85, 3.18]}
+      radius={0.22}
+      transparent
+      toneMapped
+    />
+  </group>;
 }
 
 function Tooth({ state }: { state: MotionState }) {
@@ -246,16 +289,17 @@ function Sparkles({ state }: { state: MotionState }) {
   )}</group>;
 }
 
-function Scene({ state }: { state: MotionState }) {
+function Scene({ state, urls }: { state: MotionState; urls: Record<PhotoKind, string> }) {
   return <>
     <ambientLight intensity={1.45} />
     <directionalLight position={[4, 7, 5]} intensity={2.2} color="#ffffff" castShadow />
     <pointLight position={[-5, -2, 4]} intensity={18} color="#68e2da" distance={12} />
     <pointLight position={[5, 1, 2]} intensity={12} color="#b9e9ff" distance={10} />
+    <PhotoCard state={state} kind="hero" url={urls.hero} />
+    <PhotoCard state={state} kind="tools" url={urls.tools} />
+    <PhotoCard state={state} kind="implant" url={urls.implant} />
     <Tooth state={state} />
-    <Toothbrush state={state} />
-    <Mirror state={state} />
-    {!state.mobile && <><Drill state={state} /><Aligner state={state} /><Implant state={state} /><Crown state={state} /><FlossAndSmile state={state} /><Toothpaste state={state} /><Braces state={state} /><Sparkles state={state} /></>}
+    {!state.mobile && <><Toothbrush state={state} /><Mirror state={state} /><Drill state={state} /><Aligner state={state} /><Implant state={state} /><Crown state={state} /><FlossAndSmile state={state} /><Toothpaste state={state} /><Braces state={state} /><Sparkles state={state} /></>}
   </>;
 }
 
@@ -298,10 +342,16 @@ export default function Dental3DScene() {
   }, []);
 
   if (!ready) {
-    return <div className="dental-3d-fallback" aria-hidden="true"><span /><span /><span /></div>;
+    return <div className="dental-3d-fallback photo-fallback" aria-hidden="true"><span /><span /><span /></div>;
   }
 
   const state = { progress, mobile, reduced };
+  const basePath = window.location.pathname.startsWith("/dental") ? "/dental" : "";
+  const urls = {
+    hero: `${basePath}/images/dentazone-hero-photo.png`,
+    tools: `${basePath}/images/dentazone-tools-photo.png`,
+    implant: `${basePath}/images/dentazone-implant-photo.png`,
+  };
   return <div className="dental-3d-layer" aria-hidden="true">
     <Canvas
       camera={{ position: [0, 0, 8], fov: 42 }}
@@ -310,7 +360,7 @@ export default function Dental3DScene() {
       shadows={!mobile}
       frameloop={reduced ? "demand" : "always"}
     >
-      <Scene state={state} />
+      <Scene state={state} urls={urls} />
     </Canvas>
   </div>;
 }
