@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Figtree, Noto_Sans } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Footer, Header, FloatingActions } from "@/components/site-shell";
 import { Dental3DLayer } from "@/components/dental-3d-loader";
+import { SmoothScroll } from "@/components/smooth-scroll";
 
-const figtree = Figtree({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
-const noto = Noto_Sans({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", display: "swap" });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Dentazone Clinic | Dentist in Bagjola, West Bengal", template: "%s | Dentazone Clinic" },
@@ -16,13 +17,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${figtree.variable} ${noto.variable}`}>
+      <body className={`${outfit.variable} ${jakarta.variable}`}>
         <a className="skip-link" href="#main">Skip to content</a>
-        <Dental3DLayer />
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
-        <FloatingActions />
+        <SmoothScroll>
+          <Dental3DLayer />
+          <Header />
+          <main id="main">{children}</main>
+          <Footer />
+          <FloatingActions />
+        </SmoothScroll>
       </body>
     </html>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { RoundedBox, Float, MeshTransmissionMaterial } from "@react-three/drei";
+import { EffectComposer, Bloom, DepthOfField, Vignette } from "@react-three/postprocessing";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -53,9 +54,9 @@ const blueGlass = new THREE.MeshPhysicalMaterial({
   thickness: 0.5,
 });
 const glow = new THREE.MeshBasicMaterial({
-  color: "#7ff8ee",
+  color: new THREE.Color("#7ff8ee").multiplyScalar(2.5),
   transparent: true,
-  opacity: 0.8,
+  opacity: 0.9,
 });
 
 const chapterCamera = [
@@ -96,22 +97,34 @@ function stage(group: THREE.Group | null, state: MotionState, index: number, del
 }
 
 function ToothModel({ split = 0, translucent = false }: { split?: number; translucent?: boolean }) {
-  const material = translucent ? translucentPearl : pearl;
+  const materialProps = {
+    color: "#dffcf8",
+    roughness: 0.08,
+    transmission: 0.85,
+    thickness: 1.2,
+    chromaticAberration: 0.06,
+    backside: true,
+  };
+
   return <group>
     <group position={[-split, 0, 0]}>
-      <mesh material={material} scale={[0.72, 0.92, 0.88]} position={[-0.32, 0.18, 0]} castShadow>
+      <mesh scale={[0.72, 0.92, 0.88]} position={[-0.32, 0.18, 0]} castShadow material={!translucent ? pearl : undefined}>
         <sphereGeometry args={[0.78, 36, 28]} />
+        {translucent && <MeshTransmissionMaterial {...materialProps} />}
       </mesh>
-      <mesh material={material} position={[-0.52, -0.84, 0]} rotation={[0, 0, 0.1]} castShadow>
+      <mesh position={[-0.52, -0.84, 0]} rotation={[0, 0, 0.1]} castShadow material={!translucent ? pearl : undefined}>
         <coneGeometry args={[0.29, 1.55, 28]} />
+        {translucent && <MeshTransmissionMaterial {...materialProps} />}
       </mesh>
     </group>
     <group position={[split, 0, 0]}>
-      <mesh material={material} scale={[0.72, 0.92, 0.88]} position={[0.32, 0.18, 0]} castShadow>
+      <mesh scale={[0.72, 0.92, 0.88]} position={[0.32, 0.18, 0]} castShadow material={!translucent ? pearl : undefined}>
         <sphereGeometry args={[0.78, 36, 28]} />
+        {translucent && <MeshTransmissionMaterial {...materialProps} />}
       </mesh>
-      <mesh material={material} position={[0.52, -0.84, 0]} rotation={[0, 0, -0.1]} castShadow>
+      <mesh position={[0.52, -0.84, 0]} rotation={[0, 0, -0.1]} castShadow material={!translucent ? pearl : undefined}>
         <coneGeometry args={[0.29, 1.55, 28]} />
+        {translucent && <MeshTransmissionMaterial {...materialProps} />}
       </mesh>
     </group>
   </group>;
@@ -174,11 +187,13 @@ function HeroUniverse({ state }: { state: MotionState }) {
     ref.current.rotation.z = Math.sin(clock.clock.elapsedTime * 0.35) * 0.04;
   });
   return <group ref={ref}>
-    <ToothModel translucent />
-    {[0, 1, 2].map((i) => <mesh key={i} rotation={[Math.PI / 2 + i * 0.48, i * 0.7, i]} material={blueGlass}><torusGeometry args={[2.05 + i * 0.35, 0.018, 8, 80]} /></mesh>)}
-    <group position={[-2, 0.55, 0]} rotation={[0.2, 0, -0.65]}><Instrument type="brush" scale={0.38} /></group>
-    <group position={[1.8, 0.9, 0.2]} rotation={[0.1, 0.3, 0.5]}><Instrument type="mirror" scale={0.48} /></group>
-    <group position={[0.9, -1.7, 0.5]}><Instrument type="aligner" scale={0.48} /></group>
+    <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.8}>
+      <ToothModel translucent />
+      {[0, 1, 2].map((i) => <mesh key={i} rotation={[Math.PI / 2 + i * 0.48, i * 0.7, i]} material={blueGlass}><torusGeometry args={[2.05 + i * 0.35, 0.018, 8, 80]} /></mesh>)}
+      <group position={[-2, 0.55, 0]} rotation={[0.2, 0, -0.65]}><Instrument type="brush" scale={0.38} /></group>
+      <group position={[1.8, 0.9, 0.2]} rotation={[0.1, 0.3, 0.5]}><Instrument type="mirror" scale={0.48} /></group>
+      <group position={[0.9, -1.7, 0.5]}><Instrument type="aligner" scale={0.48} /></group>
+    </Float>
   </group>;
 }
 
@@ -202,11 +217,13 @@ function PortalLab({ state }: { state: MotionState }) {
     }
   });
   return <group ref={ref}>
-    <group ref={tooth} scale={1.65}><ToothModel translucent /></group>
-    {[0, 1, 2, 3].map((i) => <mesh key={i} position={[0, 0, -1 - i * 1.1]} rotation={[Math.PI / 2, 0, i * 0.35]} material={i % 2 ? glow : blueGlass}><torusGeometry args={[1.5 + i * 0.18, 0.025, 10, 70]} /></mesh>)}
-    <group position={[-2.8, 1.3, -1]} rotation={[0.5, 0.2, -0.6]}><Instrument type="aligner" scale={0.55} /></group>
-    <group position={[2.7, -1.1, -1.4]} rotation={[0.1, 0.4, 0.3]}><Instrument type="crown" scale={0.58} /></group>
-    <group position={[2.6, 1.4, -2]} rotation={[0.4, 0, -0.3]}><ImplantModel scale={0.35} /></group>
+    <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.6}>
+      <group ref={tooth} scale={1.65}><ToothModel translucent /></group>
+      {[0, 1, 2, 3].map((i) => <mesh key={i} position={[0, 0, -1 - i * 1.1]} rotation={[Math.PI / 2, 0, i * 0.35]} material={i % 2 ? glow : blueGlass}><torusGeometry args={[1.5 + i * 0.18, 0.025, 10, 70]} /></mesh>)}
+      <group position={[-2.8, 1.3, -1]} rotation={[0.5, 0.2, -0.6]}><Instrument type="aligner" scale={0.55} /></group>
+      <group position={[2.7, -1.1, -1.4]} rotation={[0.1, 0.4, 0.3]}><Instrument type="crown" scale={0.58} /></group>
+      <group position={[2.6, 1.4, -2]} rotation={[0.4, 0, -0.3]}><ImplantModel scale={0.35} /></group>
+    </Float>
   </group>;
 }
 
@@ -239,9 +256,11 @@ function ImplantShowcase({ state }: { state: MotionState }) {
     if (implant.current) implant.current.rotation.y += state.reduced ? 0 : delta * 0.45;
   });
   return <group ref={ref}>
-    <group ref={implant} rotation={[0.08, 0, -0.18]}><ImplantModel scale={1.32} /></group>
-    {[0.9, 1.35, 1.8].map((r, i) => <mesh key={r} rotation={[Math.PI / 2, i * 0.32, 0]} material={i === 1 ? glow : blueGlass}><torusGeometry args={[r, 0.022, 10, 72]} /></mesh>)}
-    {[-1.7, -1.25, 1.25, 1.7].map((x, i) => <mesh key={x} position={[x, (i % 2 ? 1 : -1) * 1.3, 0]} material={glow}><sphereGeometry args={[0.07, 12, 8]} /></mesh>)}
+    <Float speed={2} rotationIntensity={0.2} floatIntensity={0.8}>
+      <group ref={implant} rotation={[0.08, 0, -0.18]}><ImplantModel scale={1.32} /></group>
+      {[0.9, 1.35, 1.8].map((r, i) => <mesh key={r} rotation={[Math.PI / 2, i * 0.32, 0]} material={i === 1 ? glow : blueGlass}><torusGeometry args={[r, 0.022, 10, 72]} /></mesh>)}
+      {[-1.7, -1.25, 1.25, 1.7].map((x, i) => <mesh key={x} position={[x, (i % 2 ? 1 : -1) * 1.3, 0]} material={glow}><sphereGeometry args={[0.07, 12, 8]} /></mesh>)}
+    </Float>
   </group>;
 }
 
@@ -399,6 +418,13 @@ function JourneyWorld({ state }: { state: MotionState }) {
     <AppointmentPod state={state} />
     <Finale state={state} />
     <ParticleSmile state={state} finale />
+    {!state.reduced && (
+      <EffectComposer multisampling={state.mobile ? 0 : 4}>
+        <Bloom luminanceThreshold={1.1} mipmapBlur intensity={1.8} />
+        <DepthOfField target={[0, 0, -2]} focalLength={0.03} bokehScale={3} height={480} />
+        <Vignette eskil={false} offset={0.1} darkness={0.6} />
+      </EffectComposer>
+    )}
   </>;
 }
 
