@@ -29,7 +29,7 @@ export function TypographicPreloader({ onComplete }: TypographicPreloaderProps) 
 
   useEffect(() => {
     let startTime: number | null = null;
-    const duration = 1400; // 1.4 seconds
+    const duration = 5000; // 5 seconds
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
