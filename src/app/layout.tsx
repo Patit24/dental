@@ -9,9 +9,9 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", display:
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Dentazone Clinic | Dentist in Bagjola, West Bengal", template: "%s | Dentazone Clinic" },
-  description: "Dentazone Clinic provides complete dental care at Kolsur More, Basirhat Road, Machalandapur, Bagjola, West Bengal. Call 079080 81534.",
-  keywords: ["Dentazone Clinic", "dentist Bagjola", "dental clinic Machalandapur", "dentist Basirhat Road", "dental implants", "root canal", "teeth whitening"],
+  title: { default: "Saha Clinic Family Dental Care Center | Dentist in Basirhat", template: "%s | Saha Clinic" },
+  description: "Saha Clinic Family Dental Care Center provides emergency care, online dentist booking, cosmetic procedures, check-ups and family dental services at Bagati Rd, Bhyabla, Basirhat, West Bengal 743412.",
+  keywords: ["Saha Clinic Family Dental Care Center", "dentist Basirhat", "dental clinic Bhyabla", "Bagati Road dentist", "emergency dental care", "teeth whitening", "oral surgery"],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -31,4 +31,3 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     </html>
   );
 }
-

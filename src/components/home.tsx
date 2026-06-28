@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Activity, ArrowRight, Award, Baby, Bone, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, ClipboardCheck, Clock3, Heart, HeartPulse, MapPin, Microscope, MoveRight, PhoneCall, Quote, ScanLine, ShieldCheck, Smile, Sparkles, Star, Stethoscope, Syringe, WandSparkles, Waves, Zap } from "lucide-react";
+import { assetPath } from "@/lib/assets";
 import { clinic, doctors, faqs, posts, reviews, services } from "@/lib/data";
 import { Counter } from "./motion";
 
@@ -114,7 +115,7 @@ export function Hero() {
             <span className="h-5 w-px bg-black/10"/>
             <span className="flex items-center gap-1.5">
               <MapPin size={15} className="text-[var(--teal)]"/>
-              <b>Bagjola</b>, West Bengal
+              <b>Basirhat</b>, West Bengal
             </span>
           </motion.div>
         </div>
@@ -131,7 +132,7 @@ export function Hero() {
           >
             <div className="absolute inset-0">
               <Image 
-                src="/images/dentazone-hero-photo.png" 
+                src={assetPath("/images/dentazone-hero-photo.png")} 
                 alt="Photorealistic dental tooth model and professional instruments" 
                 fill 
                 priority 
@@ -145,9 +146,9 @@ export function Hero() {
             </div>
           </motion.div>
           
-          <StatFloat className="-left-4 top-8 lg:-left-10" icon={<Award/>} value="20" label="Dental Services" delay={0.4}/>
-          <StatFloat className="-right-3 top-[42%] lg:-right-8" icon={<Heart/>} value="Trusted" label="Patient-first Care" delay={0.48}/>
-          <StatFloat className="bottom-6 left-6 lg:-left-2" icon={<PhoneCall/>} value="Call" label={clinic.phoneDisplay} delay={0.56}/>
+          <StatFloat className="-left-4 top-8 lg:-left-10" icon={<Award/>} value="4.7" label="Google Rating" delay={0.4}/>
+          <StatFloat className="-right-3 top-[42%] lg:-right-8" icon={<Heart/>} value="34" label="Patient Reviews" delay={0.48}/>
+          <StatFloat className="bottom-6 left-6 lg:-left-2" icon={<PhoneCall/>} value="Online" label="Booking Available" delay={0.56}/>
         </motion.div>
       </div>
     </section>
@@ -212,7 +213,7 @@ export function DentalScrollGallery() {
             >
               <motion.div style={{ scale: imgScale1 }} className="absolute inset-0">
                 <Image 
-                  src="/images/dentazone-tools-photo.png" 
+                  src={assetPath("/images/dentazone-tools-photo.png")} 
                   alt="Everyday and preventive dental care instruments" 
                   fill 
                   sizes="100vw"
@@ -230,7 +231,7 @@ export function DentalScrollGallery() {
             >
               <motion.div style={{ scale: imgScale2 }} className="absolute inset-0">
                 <Image 
-                  src="/images/dentazone-implant-photo.png" 
+                  src={assetPath("/images/dentazone-implant-photo.png")} 
                   alt="Bespoke restorative dental implants and clear aligners" 
                   fill 
                   sizes="100vw"
@@ -255,7 +256,7 @@ export function DentalScrollGallery() {
           {/* Row 2 */}
           <div className="scroll-gallery-row justify-end">
             <div className="reveal-wrapper">
-              <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Bagjola</motion.p>
+              <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Basirhat</motion.p>
             </div>
           </div>
 
@@ -849,11 +850,11 @@ export function Emergency() {
                 <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#9ce5df]">
                   <Clock3 size={15}/> Need dental assistance?
                 </span>
-                <h2 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl leading-tight">Speak directly with Dentazone Clinic.</h2>
-                <p className="mt-4 max-w-2xl text-white/70">Call for appointment availability and guidance about your dental concern.</p>
+                <h2 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl leading-tight">Reach Saha Clinic Family Dental Care Center.</h2>
+                <p className="mt-4 max-w-2xl text-white/70">Use the online appointment form or open the clinic listing for current contact details.</p>
               </div>
               <a className="btn bg-white text-[var(--teal)] font-bold text-sm shadow-xl" href={clinic.phoneHref}>
-                <PhoneCall size={18}/> Call {clinic.phoneDisplay}
+                <MapPin size={18}/> Open Google Maps
               </a>
             </div>
           </div>
@@ -1010,11 +1011,11 @@ export function ContactMapSection() {
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--cyan)] text-[var(--teal)] border border-white/30">
               <MapPin size={22}/>
             </span>
-            <span className="eyebrow mt-10">Chapter 09 · Return to Dentazone</span>
+            <span className="eyebrow mt-10">Chapter 09 · Return to Saha Clinic</span>
             <h2 className="mt-5 text-4xl font-bold tracking-tight">Dental care close to home.</h2>
             <p className="mt-5 text-sm leading-relaxed text-[var(--ink-soft)]">{clinic.address}</p>
             <div className="mt-6 grid gap-2 text-sm border-t border-black/5 pt-5">
-              <a className="font-bold text-lg text-[var(--teal)]" href={clinic.phoneHref}>{clinic.phoneDisplay}</a>
+              <a className="font-bold text-lg text-[var(--teal)]" href={clinic.phoneHref} target="_blank" rel="noreferrer">{clinic.phoneDisplay}</a>
               <a className="font-semibold text-xs text-[var(--ink-soft)] hover:text-[var(--ink)] flex items-center gap-1.5" href={clinic.mapLink} target="_blank" rel="noreferrer">
                 Open in Google Maps <ArrowRight size={14}/>
               </a>
@@ -1035,7 +1036,7 @@ export function ContactMapSection() {
           <div className="h-[480px] overflow-hidden rounded-[28px] bg-[var(--cyan)] border border-white/60 shadow-xl">
             <iframe 
               className="h-full w-full border-0" 
-              title="Map showing Dentazone Clinic in Bagjola" 
+              title="Map showing Saha Clinic Family Dental Care Center in Basirhat" 
               loading="lazy" 
               referrerPolicy="no-referrer-when-downgrade" 
               src={clinic.mapEmbed}
@@ -1121,10 +1122,10 @@ export function FeaturedPortfolio() {
   const yRight = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : -60, reduce ? 0 : 60]);
 
   const items = [
-    { title: "Implant Restorations", year: "2025", image: "/images/dentazone-implant-photo.png", alt: "Restorative dental implant model", col: "left" },
-    { title: "Cosmetic Veneers", year: "2024", image: "/images/dentazone-hero-photo.png", alt: "Cosmetic veneers smile showcase", col: "right" },
-    { title: "Orthodontic Aligners", year: "2025", image: "/images/dentazone-tools-photo.png", alt: "Orthodontic aligners case review", col: "left" },
-    { title: "Full Arch Rehabilitation", year: "2025", image: "/images/dental-hero.png", alt: "Complete oral rehabilitation patient profile", col: "right" },
+    { title: "Emergency & Family Care", year: "2026", image: assetPath("/images/dentazone-implant-photo.png"), alt: "Restorative dental implant model", col: "left" },
+    { title: "Cosmetic Whitening", year: "2026", image: assetPath("/images/dentazone-hero-photo.png"), alt: "Cosmetic dental smile showcase", col: "right" },
+    { title: "Paediatric Dentistry", year: "2026", image: assetPath("/images/dentazone-tools-photo.png"), alt: "Dental tools and aligner case review", col: "left" },
+    { title: "Dentures & Bridges", year: "2026", image: assetPath("/images/dental-hero.png"), alt: "Complete oral rehabilitation patient profile", col: "right" },
   ];
 
   const leftItems = items.filter(item => item.col === "left");
@@ -1202,4 +1203,3 @@ export function FeaturedPortfolio() {
     </section>
   );
 }
-

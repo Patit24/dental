@@ -15,9 +15,9 @@ const words = [
   "ORTHODONTICS",
   "ENDODONTICS",
   "RESTORATION",
-  "IMPLANTOLOGY",
-  "PROSTHETICS",
-  "DENTAZONE",
+  "EMERGENCY CARE",
+  "FAMILY CARE",
+  "SAHA CLINIC",
 ];
 
 interface TypographicPreloaderProps {
@@ -74,8 +74,8 @@ export function TypographicPreloader({ onComplete }: TypographicPreloaderProps) 
     >
       {/* Top Header */}
       <div className="flex justify-between items-center w-full font-heading text-xs tracking-[0.2em] font-bold">
-        <span className="text-[var(--teal)]">DENTAZONE CLINIC</span>
-        <span className="text-[#e2f8f6]/70">EST. 2026 / ORAL ARTISTRY</span>
+        <span className="text-[var(--teal)]">SAHA CLINIC</span>
+        <span className="text-[#e2f8f6]/70">FAMILY DENTAL CARE / BASIRHAT</span>
       </div>
 
       {/* Main Typography Grid */}
@@ -124,17 +124,12 @@ interface PreloaderWrapperProps {
 }
 
 export function PreloaderWrapper({ children }: PreloaderWrapperProps) {
-  const [loading, setLoading] = useState(true);
-  const [completed, setCompleted] = useState(false);
-
-  useEffect(() => {
-    // Check session flag to skip loader on subsequent visits
-    const hasLoaded = sessionStorage.getItem("dentazone_loaded");
-    if (hasLoaded === "true") {
-      setLoading(false);
-      setCompleted(true);
-    }
-  }, []);
+  const hasLoadedBefore = () => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("saha_clinic_loaded") === "true";
+  };
+  const [loading, setLoading] = useState(() => !hasLoadedBefore());
+  const [completed, setCompleted] = useState(() => hasLoadedBefore());
 
   useEffect(() => {
     if (loading) {
@@ -151,7 +146,7 @@ export function PreloaderWrapper({ children }: PreloaderWrapperProps) {
   }, [loading]);
 
   const handleComplete = () => {
-    sessionStorage.setItem("dentazone_loaded", "true");
+    sessionStorage.setItem("saha_clinic_loaded", "true");
     setLoading(false);
     
     // Wait for the exit slide-up animation to complete before cleaning wrapper styles
