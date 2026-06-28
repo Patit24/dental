@@ -17,7 +17,7 @@ const words = [
   "RESTORATION",
   "EMERGENCY CARE",
   "FAMILY CARE",
-  "SAHA CLINIC",
+  "DR SHAHEEN",
 ];
 
 interface TypographicPreloaderProps {
@@ -74,8 +74,8 @@ export function TypographicPreloader({ onComplete }: TypographicPreloaderProps) 
     >
       {/* Top Header */}
       <div className="flex justify-between items-center w-full font-heading text-xs tracking-[0.2em] font-bold">
-        <span className="text-[var(--teal)]">SAHA CLINIC</span>
-        <span className="text-[#e2f8f6]/70">FAMILY DENTAL CARE / BASIRHAT</span>
+        <span className="text-[var(--teal)]">DR. SHAHEEN&apos;S</span>
+        <span className="text-[#e2f8f6]/70">DENTAL CLINIC / HABRA</span>
       </div>
 
       {/* Main Typography Grid */}
@@ -126,7 +126,7 @@ interface PreloaderWrapperProps {
 export function PreloaderWrapper({ children }: PreloaderWrapperProps) {
   const hasLoadedBefore = () => {
     if (typeof window === "undefined") return false;
-    return sessionStorage.getItem("saha_clinic_loaded") === "true";
+    return sessionStorage.getItem("dr_shaheen_clinic_loaded") === "true";
   };
   const [loading, setLoading] = useState(() => !hasLoadedBefore());
   const [completed, setCompleted] = useState(() => hasLoadedBefore());
@@ -146,7 +146,7 @@ export function PreloaderWrapper({ children }: PreloaderWrapperProps) {
   }, [loading]);
 
   const handleComplete = () => {
-    sessionStorage.setItem("saha_clinic_loaded", "true");
+    sessionStorage.setItem("dr_shaheen_clinic_loaded", "true");
     setLoading(false);
     
     // Wait for the exit slide-up animation to complete before cleaning wrapper styles

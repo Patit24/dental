@@ -9,9 +9,9 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-heading", display:
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Saha Clinic Family Dental Care Center | Dentist in Basirhat", template: "%s | Saha Clinic" },
-  description: "Saha Clinic Family Dental Care Center provides emergency care, online dentist booking, cosmetic procedures, check-ups and family dental services at Bagati Rd, Bhyabla, Basirhat, West Bengal 743412.",
-  keywords: ["Saha Clinic Family Dental Care Center", "dentist Basirhat", "dental clinic Bhyabla", "Bagati Road dentist", "emergency dental care", "teeth whitening", "oral surgery"],
+  title: { default: "Dr. Shaheen's Dental Clinic | Dentist in Habra", template: "%s | Dr. Shaheen's Dental Clinic" },
+  description: "Dr. Shaheen's Dental Clinic provides modern dental care at Swamiji Road, Jorasirishtala, Habra, West Bengal 743233. Open until 11:30 pm.",
+  keywords: ["Dr. Shaheen's Dental Clinic", "dentist Habra", "dental clinic Jorasirishtala", "Swamiji Road dentist", "emergency dental care", "teeth whitening", "oral surgery"],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

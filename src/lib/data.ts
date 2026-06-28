@@ -4,16 +4,17 @@ import {
 } from "lucide-react";
 
 export const clinic = {
-  name: "Saha Clinic Family Dental Care Center",
-  shortName: "Saha Clinic",
-  rating: "4.7",
-  reviewCount: "34",
-  phoneDisplay: "View phone on Google Maps",
-  phoneHref: "https://maps.google.com/maps?vet=10CAAQoqAOahcKEwjYibzC0KmVAxUAAAAAHQAAAAAQFg..i&rlz=1C5GCEM_enIN1109IN1109&sca_esv=feb3dd5743e99a28&udm=1&pvq=Cg0vZy8xMWZ6djBtN3Ju&lqi=Cg9kZW50aXN0IG5lYXIgbWVI9L2moPutgIAIWhUQABgAIg9kZW50aXN0IG5lYXIgbWWSAQ1kZW50YWxfY2xpbmlj&fvr=1&cs=0&um=1&ie=UTF-8&fb=1&gl=in&sa=X&ftid=0x39ff55d2252ec433:0x1e0a44ff807870f1",
-  whatsappHref: "https://maps.google.com/maps?vet=10CAAQoqAOahcKEwjYibzC0KmVAxUAAAAAHQAAAAAQFg..i&rlz=1C5GCEM_enIN1109IN1109&sca_esv=feb3dd5743e99a28&udm=1&pvq=Cg0vZy8xMWZ6djBtN3Ju&lqi=Cg9kZW50aXN0IG5lYXIgbWVI9L2moPutgIAIWhUQABgAIg9kZW50aXN0IG5lYXIgbWWSAQ1kZW50YWxfY2xpbmlj&fvr=1&cs=0&um=1&ie=UTF-8&fb=1&gl=in&sa=X&ftid=0x39ff55d2252ec433:0x1e0a44ff807870f1",
-  address: "Bagati Rd, Bhyabla, Basirhat, West Bengal 743412",
-  mapEmbed: "https://www.google.com/maps?q=Bagati%20Rd%2C%20Bhyabla%2C%20Basirhat%2C%20West%20Bengal%20743412&output=embed",
-  mapLink: "https://maps.google.com/maps?vet=10CAAQoqAOahcKEwjYibzC0KmVAxUAAAAAHQAAAAAQFg..i&rlz=1C5GCEM_enIN1109IN1109&sca_esv=feb3dd5743e99a28&udm=1&pvq=Cg0vZy8xMWZ6djBtN3Ju&lqi=Cg9kZW50aXN0IG5lYXIgbWVI9L2moPutgIAIWhUQABgAIg9kZW50aXN0IG5lYXIgbWWSAQ1kZW50YWxfY2xpbmlj&fvr=1&cs=0&um=1&ie=UTF-8&fb=1&gl=in&sa=X&ftid=0x39ff55d2252ec433:0x1e0a44ff807870f1",
+  name: "Dr. Shaheen's Dental Clinic",
+  shortName: "Dr. Shaheen's",
+  status: "Open",
+  hoursDisplay: "Open · Closes 11:30 pm",
+  updatedDisplay: "Updated by this business 7 weeks ago",
+  phoneDisplay: "Open in Google Maps",
+  phoneHref: "https://www.google.com/maps/search/?api=1&query=Dr.%20Shaheen%27s%20Dental%20Clinic%2C%20Swamiji%20Road%2C%20Jorasirishtala%2C%20Habra%2C%20West%20Bengal%20743233",
+  whatsappHref: "https://www.google.com/maps/search/?api=1&query=Dr.%20Shaheen%27s%20Dental%20Clinic%2C%20Swamiji%20Road%2C%20Jorasirishtala%2C%20Habra%2C%20West%20Bengal%20743233",
+  address: "Swamiji Road, Jorasirishtala, Habra, West Bengal 743233",
+  mapEmbed: "https://www.google.com/maps?q=Dr.%20Shaheen%27s%20Dental%20Clinic%2C%20Swamiji%20Road%2C%20Jorasirishtala%2C%20Habra%2C%20West%20Bengal%20743233&output=embed",
+  mapLink: "https://www.google.com/maps/search/?api=1&query=Dr.%20Shaheen%27s%20Dental%20Clinic%2C%20Swamiji%20Road%2C%20Jorasirishtala%2C%20Habra%2C%20West%20Bengal%20743233",
 } as const;
 
 export const nav = [
@@ -36,9 +37,9 @@ export const services = [
 ] as const;
 
 export const doctors = [
-  { name: "Saha Clinic Dental Team", role: "Preventive & Family Dentistry", exp: "Patient-first care", image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85" },
-  { name: "Saha Clinic Surgical Team", role: "Oral Surgery & Extractions", exp: "Modern treatment", image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=85" },
-  { name: "Saha Clinic Cosmetic Team", role: "Cosmetic & Restorative Care", exp: "Complete dentistry", image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=900&q=85" },
+  { name: "Dr. Shaheen's Dental Team", role: "Preventive & Family Dentistry", exp: "Patient-first care", image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85" },
+  { name: "Dr. Shaheen's Surgical Team", role: "Oral Surgery & Extractions", exp: "Modern treatment", image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=85" },
+  { name: "Dr. Shaheen's Cosmetic Team", role: "Cosmetic & Restorative Care", exp: "Complete dentistry", image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=900&q=85" },
 ] as const;
 
 export const reviews = [
@@ -56,6 +57,6 @@ export const posts = [
 export const faqs = [
   ["How do I book an appointment?", "Use the online appointment form or open the clinic listing on Google Maps for the latest contact details."],
   ["Will my treatment be painful?", "Comfort is planned into every visit. The dental team uses gentle techniques, appropriate anaesthesia and clear check-ins throughout treatment."],
-  ["Which services are available?", "Saha Clinic provides emergency care, online dentist booking, cosmetic procedures, check-ups, whitening, extractions, dentures and bridges, paediatrics, fillings and sealants, and oral surgery."],
+  ["Which services are available?", "Dr. Shaheen's Dental Clinic provides preventive, cosmetic, restorative, paediatric and surgical dental care, including emergency care, check-ups, whitening, extractions, dentures and bridges, fillings and sealants, and oral surgery."],
   ["How often should I visit the dentist?", "Most patients benefit from a preventive visit every six months. Your dentist may recommend a different schedule based on your oral health."],
 ] as const;

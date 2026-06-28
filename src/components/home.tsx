@@ -115,7 +115,7 @@ export function Hero() {
             <span className="h-5 w-px bg-black/10"/>
             <span className="flex items-center gap-1.5">
               <MapPin size={15} className="text-[var(--teal)]"/>
-              <b>Basirhat</b>, West Bengal
+              <b>Habra</b>, West Bengal
             </span>
           </motion.div>
         </div>
@@ -146,8 +146,8 @@ export function Hero() {
             </div>
           </motion.div>
           
-          <StatFloat className="-left-4 top-8 lg:-left-10" icon={<Award/>} value="4.7" label="Google Rating" delay={0.4}/>
-          <StatFloat className="-right-3 top-[42%] lg:-right-8" icon={<Heart/>} value="34" label="Patient Reviews" delay={0.48}/>
+          <StatFloat className="-left-4 top-8 lg:-left-10" icon={<Award/>} value="Open" label="Now welcoming patients" delay={0.4}/>
+          <StatFloat className="-right-3 top-[42%] lg:-right-8" icon={<Heart/>} value="11:30" label="Closes tonight" delay={0.48}/>
           <StatFloat className="bottom-6 left-6 lg:-left-2" icon={<PhoneCall/>} value="Online" label="Booking Available" delay={0.56}/>
         </motion.div>
       </div>
@@ -256,7 +256,7 @@ export function DentalScrollGallery() {
           {/* Row 2 */}
           <div className="scroll-gallery-row justify-end">
             <div className="reveal-wrapper">
-              <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Basirhat</motion.p>
+              <motion.p style={{ x: x2 }} className="scroll-gallery-sub">Habra</motion.p>
             </div>
           </div>
 
@@ -850,8 +850,8 @@ export function Emergency() {
                 <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#9ce5df]">
                   <Clock3 size={15}/> Need dental assistance?
                 </span>
-                <h2 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl leading-tight">Reach Saha Clinic Family Dental Care Center.</h2>
-                <p className="mt-4 max-w-2xl text-white/70">Use the online appointment form or open the clinic listing for current contact details.</p>
+                <h2 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl leading-tight">Reach Dr. Shaheen&apos;s Dental Clinic.</h2>
+                <p className="mt-4 max-w-2xl text-white/70">Open until 11:30 pm. Use the online appointment form or open the clinic listing for current contact details.</p>
               </div>
               <a className="btn bg-white text-[var(--teal)] font-bold text-sm shadow-xl" href={clinic.phoneHref}>
                 <MapPin size={18}/> Open Google Maps
@@ -1011,11 +1011,12 @@ export function ContactMapSection() {
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--cyan)] text-[var(--teal)] border border-white/30">
               <MapPin size={22}/>
             </span>
-            <span className="eyebrow mt-10">Chapter 09 · Return to Saha Clinic</span>
+            <span className="eyebrow mt-10">Chapter 09 · Return to Dr. Shaheen&apos;s</span>
             <h2 className="mt-5 text-4xl font-bold tracking-tight">Dental care close to home.</h2>
             <p className="mt-5 text-sm leading-relaxed text-[var(--ink-soft)]">{clinic.address}</p>
             <div className="mt-6 grid gap-2 text-sm border-t border-black/5 pt-5">
               <a className="font-bold text-lg text-[var(--teal)]" href={clinic.phoneHref} target="_blank" rel="noreferrer">{clinic.phoneDisplay}</a>
+              <span className="text-xs font-semibold text-[var(--teal)]">{clinic.hoursDisplay}</span>
               <a className="font-semibold text-xs text-[var(--ink-soft)] hover:text-[var(--ink)] flex items-center gap-1.5" href={clinic.mapLink} target="_blank" rel="noreferrer">
                 Open in Google Maps <ArrowRight size={14}/>
               </a>
@@ -1036,7 +1037,7 @@ export function ContactMapSection() {
           <div className="h-[480px] overflow-hidden rounded-[28px] bg-[var(--cyan)] border border-white/60 shadow-xl">
             <iframe 
               className="h-full w-full border-0" 
-              title="Map showing Saha Clinic Family Dental Care Center in Basirhat" 
+              title="Map showing Dr. Shaheen's Dental Clinic in Habra" 
               loading="lazy" 
               referrerPolicy="no-referrer-when-downgrade" 
               src={clinic.mapEmbed}
